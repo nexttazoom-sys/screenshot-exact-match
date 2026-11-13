@@ -28,3 +28,8 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Application architecture
+- Keep public content in leaf TanStack routes and share navigation in the root shell so every section has a crawlable URL.
+- Keep illustrative quote calculations and validation in a browser-safe module; never represent simulation factors or prices as official insurer tariffs.
+- Store advisory leads through a validated public server function; only the service role may access their table so visitor data stays private.

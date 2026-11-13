@@ -1,23 +1,15 @@
-import { createFileRoute } from "@tanstack/react-router";
-
-// The home route ships no og:image, so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
-export const Route = createFileRoute("/")({
-  component: Index,
-});
-
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { useState, type FormEvent } from 'react';
+import { ArrowRight, Check, ShieldCheck, Heart, LockKeyhole, Clock3, BadgeCheck, Headphones, FileCheck2 } from 'lucide-react';
+import family from '@/assets/familia-salud.jpg';
+import { Button } from '@/components/ui/button';
+import { Benefits } from '@/components/benefits';
+import { QuoteFields, QuoteWizard } from '@/components/quote-wizard';
+import { defaultQuote, quoteSchema } from '@/lib/quote';
+import { pageHead } from '@/components/site-shell';
+export const Route = createFileRoute('/')({ head:()=>pageHead('Cotiza tu plan de salud en Isapre CruzBlanca','Asesoría experta y gratuita. Simula tu presupuesto, compara escenarios y solicita orientación sobre planes CruzBlanca.'),component:Index });
 function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
+ const [q,setQ]=useState(defaultQuote); const [open,setOpen]=useState(false); const [error,setError]=useState(''); const [version,setVersion]=useState(0);
+ const start=(e:FormEvent)=>{e.preventDefault();if(!quoteSchema.safeParse(q).success){setError('Revisa tu renta y edad para continuar.');return;}setError('');setVersion(version+1);setOpen(true);};
+ return <><section className="hero"><img src={family} className="hero-photo" width={1536} height={1024} alt="Familia disfrutando un momento juntos en un parque de Santiago" fetchPriority="high"/><div className="site-container hero-content"><p className="eyebrow inline-flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-brand"/> ELIGE BIEN. VIVE TRANQUILO.</p><h1>Cotiza tu plan de salud en <span>Isapre CruzBlanca.</span></h1><p className="text-lg font-semibold mb-3">Asesoría experta y gratuita, para ti.</p><p className="hero-description">Tu salud y la de tu familia merecen un buen plan. Encuentra opciones a tu medida, con una amplia red de clínicas y las coberturas que necesitas.</p><div className="flex flex-wrap gap-x-5 gap-y-2 mt-6 text-[11px] font-semibold"><span className="flex items-center gap-1.5"><Check size={14} className="text-primary"/> Asesoría sin costo</span><span className="flex items-center gap-1.5"><Check size={14} className="text-primary"/> Sin compromiso</span><span className="flex items-center gap-1.5"><Check size={14} className="text-primary"/> Atención personalizada</span></div><Button asChild variant="link" className="px-0 mt-4 text-brand text-xs"><a href="#cotizar">Encuentra tu plan ideal <ArrowRight/></a></Button></div><div className="hero-note"><span className="icon-tile bg-success-soft text-primary w-10 h-10"><ShieldCheck size={23}/></span><div><p className="font-bold">Lo más importante, protegido.</p><p className="text-muted-foreground text-[10px] mt-1">Tu tranquilidad comienza con una buena elección.</p></div></div></section><section id="cotizar" className="site-container pt-6"><div className="quote-panel"><div className="flex flex-wrap items-center justify-between gap-3 mb-5"><h2 className="text-lg font-bold">Comencemos con tu cotización</h2><span className="text-[11px] text-muted-foreground flex gap-2 items-center"><Clock3 size={14}/> Solo te tomará un momento</span></div><form onSubmit={start}><div className="grid grid-cols-2 md:grid-cols-[1.15fr_.65fr_.8fr_1.3fr_1.3fr] gap-4 items-end"><QuoteFields compact value={q} onChange={setQ}/><Button type="submit" className="h-[46px] col-span-2 md:col-span-1 text-xs px-3">Cotizar CruzBlanca ahora <ArrowRight/></Button></div>{error&&<p role="alert" className="text-destructive text-xs mt-3">{error}</p>}<p className="text-[10px] text-muted-foreground mt-4 flex items-center gap-1.5"><LockKeyhole size={12}/> Información privada. La simulación no constituye una oferta comercial.</p></form></div></section><div className="site-container"><div className="trust-strip"><span><ShieldCheck/> Asesoría transparente</span><span><Heart/> Planes para cada etapa de tu vida</span><span><BadgeCheck/> Orientación personalizada</span><span><LockKeyhole/> Información protegida</span></div></div><Benefits/><section className="bg-brand-soft section"><div className="site-container grid md:grid-cols-[1fr_1.1fr] gap-12 items-center"><div><p className="eyebrow">UN CAMINO SIMPLE, UNA MEJOR DECISIÓN</p><h2 className="section-title mt-3">Tu nuevo plan comienza<br className="hidden md:block"/> con tres pequeños pasos.</h2><p className="section-subtitle">Te acompañamos para que decidas con información clara y sin complicaciones.</p><Button asChild variant="outline" className="mt-6 text-brand"><Link to="/asesoria">Quiero orientación <ArrowRight/></Link></Button></div><div className="space-y-7">{[{icon:FileCheck2,n:'01',title:'Cuéntanos sobre ti',text:'Tu renta, edad y cargas nos ayudan a estimar tu presupuesto.'},{icon:Heart,n:'02',title:'Elige lo que más te importa',text:'Define tus preferencias de cobertura y atención.'},{icon:Headphones,n:'03',title:'Decide con acompañamiento',text:'Revisa tu simulación y solicita una cotización formal.'}].map(s=><div key={s.n} className="flex gap-5"><span className="text-brand/40 font-bold text-xl pt-1">{s.n}</span><div><h3 className="font-bold text-sm flex items-center gap-2"><s.icon size={17} className="text-brand"/>{s.title}</h3><p className="text-xs text-muted-foreground mt-2 leading-6">{s.text}</p></div></div>)}</div></div></section><QuoteWizard key={version} open={open} onOpenChange={setOpen} initial={q}/></>;
 }
