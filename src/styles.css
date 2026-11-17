@@ -77,23 +77,23 @@
   --pure-white: #ffffff;
   --midnight-dark: #0a033c;
 
-  --brand: oklch(0.244 0.165 275.4); /* #12056E */
-  --brand-cobalt: oklch(0.303 0.198 275.6); /* #1B0994 */
+  --brand: oklch(0.244 0.165 275.4);
+  --brand-cobalt: oklch(0.303 0.198 275.6);
   --brand-soft: oklch(0.968 0.018 280);
-  --accent-magenta: oklch(0.618 0.254 348.5); /* #E91E8C */
-  --accent-magenta-bright: oklch(0.63 0.258 349.5); /* #F01E8E */
-  --midnight: oklch(0.165 0.106 277.5); /* #0A033C */
+  --accent-magenta: oklch(0.618 0.254 348.5);
+  --accent-magenta-bright: oklch(0.63 0.258 349.5);
+  --midnight: oklch(0.165 0.106 277.5);
   --success-soft: oklch(0.955 0.035 348.5);
   --radius: 0.75rem;
-  --background: oklch(1 0 0); /* #FFFFFF */
-  --foreground: oklch(0.165 0.106 277.5); /* #0A033C */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.165 0.106 277.5);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.165 0.106 277.5);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.165 0.106 277.5);
-  --primary: oklch(0.618 0.254 348.5); /* #E91E8C - Llamadas a la acción principales */
-  --primary-foreground: oklch(1 0 0); /* #FFFFFF */
-  --secondary: oklch(0.244 0.165 275.4); /* #12056E */
+  --primary: oklch(0.618 0.254 348.5);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.244 0.165 275.4);
   --secondary-foreground: oklch(1 0 0);
   --muted: oklch(0.968 0.018 280);
   --muted-foreground: oklch(0.32 0.085 277);
@@ -174,13 +174,13 @@
 
 /* ===== LAYOUT & NAVIGATION ===== */
 .site-container {
-  max-width: 1180px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 28px;
 }
 
 .site-header {
-  height: 84px;
+  height: 82px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -197,7 +197,6 @@
   line-height: 1.1;
 }
 
-/* Sello / Stamp motif inspirado en Lina Cardona Landing con la cruz de salud */
 .brand-seal {
   width: 42px;
   height: 42px;
@@ -277,24 +276,24 @@
   border-color: #e91e8c;
 }
 
-/* ===== HERO DE ALTO CONTRASTE (#12056E / #1B0994 + #E91E8C + #FFFFFF) ===== */
+/* ===== HERO CON PROTAGONISMO DE LA FOTO DE FAMILIA ===== */
 .hero {
   position: relative;
-  background: linear-gradient(135deg, #12056e 0%, #1b0994 60%, #12056e 100%);
+  background: linear-gradient(135deg, #12056e 0%, #1b0994 58%, #12056e 100%);
   color: #ffffff;
   overflow: hidden;
-  padding: 64px 0 84px;
+  padding: 56px 0 88px;
 }
 
 .hero::before {
   content: "";
   position: absolute;
-  top: -140px;
-  right: -120px;
-  width: 520px;
-  height: 520px;
+  top: -120px;
+  right: -80px;
+  width: 560px;
+  height: 560px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(233, 30, 140, 0.28) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(233, 30, 140, 0.32) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -314,8 +313,8 @@
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: 1.12fr 0.88fr;
-  gap: 48px;
+  grid-template-columns: 1.02fr 0.98fr;
+  gap: 44px;
   align-items: center;
 }
 
@@ -343,37 +342,32 @@
 }
 
 .hero h1 {
-  font-size: clamp(2.15rem, 4vw, 3.25rem);
-  line-height: 1.13;
+  font-size: clamp(2.1rem, 3.8vw, 3.15rem);
+  line-height: 1.14;
   font-weight: 800;
   color: #ffffff;
-  margin: 20px 0 18px;
+  margin: 18px 0 16px;
 }
 
 .hero h1 span {
   color: #f01e8e;
-  text-decoration: underline;
-  text-decoration-color: rgba(240, 30, 142, 0.45);
-  text-underline-offset: 6px;
 }
 
 .hero-description {
   font-size: 16px;
-  line-height: 1.75;
-  color: rgba(255, 255, 255, 0.92);
-  max-width: 540px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.93);
+  max-width: 530px;
 }
 
-/* Burbuja blanca / Gancho del 7% estilo flyer adjunto */
 .hook-bubble {
   background: #ffffff;
   color: #0a033c;
   border-radius: 20px;
-  padding: 20px 24px;
-  margin-top: 22px;
+  padding: 18px 22px;
+  margin-top: 20px;
   border-left: 6px solid #e91e8c;
-  box-shadow: 0 18px 40px rgba(10, 3, 60, 0.32);
-  position: relative;
+  box-shadow: 0 18px 40px rgba(10, 3, 60, 0.3);
 }
 
 .hook-bubble-badge {
@@ -386,50 +380,67 @@
   letter-spacing: 0.06em;
   padding: 4px 10px;
   border-radius: 999px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
-/* Marco de imagen y tarjeta postal estilo Lina Cardona en el Hero */
-.hero-visual-card {
+/* Marco protagonista de la foto familiar */
+.hero-family-showcase {
   position: relative;
-  background: #ffffff;
-  color: #0a033c;
-  border-radius: 24px;
-  padding: 16px;
-  box-shadow: 0 28px 60px rgba(10, 3, 60, 0.45);
-  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 28px;
+  padding: 12px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(246, 245, 255, 0.95) 100%);
+  box-shadow:
+    0 30px 70px rgba(10, 3, 60, 0.5),
+    0 0 0 4px rgba(233, 30, 140, 0.35);
+}
+
+.hero-photo-wrapper {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
 }
 
 .hero-photo-frame {
   width: 100%;
-  height: 310px;
+  height: 410px;
   object-fit: cover;
-  object-position: center;
-  border-radius: 16px;
+  object-position: center 22%;
   display: block;
+  transition: transform 0.5s ease;
+}
+
+.hero-family-showcase:hover .hero-photo-frame {
+  transform: scale(1.02);
+}
+
+.hero-photo-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 52%, rgba(10, 3, 60, 0.78) 100%);
+  pointer-events: none;
+}
+
+.hero-photo-caption {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: #ffffff;
+  z-index: 2;
 }
 
 .hero-letter-box {
-  background: #f7f6ff;
-  border: 1px solid rgba(18, 5, 110, 0.12);
-  border-radius: 16px;
-  padding: 20px 22px;
-  margin-top: 14px;
-  position: relative;
-}
-
-.hero-note {
-  background: #12056e;
-  color: #ffffff;
-  padding: 12px 18px;
-  border-radius: 14px;
-  box-shadow: 0 12px 28px rgba(18, 5, 110, 0.35);
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  font-size: 12px;
+  background: #ffffff;
+  border: 1px solid rgba(18, 5, 110, 0.1);
+  border-radius: 18px;
+  padding: 16px 20px;
   margin-top: 12px;
-  border: 1px solid rgba(233, 30, 140, 0.45);
+  color: #0a033c;
 }
 
 /* ===== BOTONES MAGENTA Y SECUNDARIOS ===== */
@@ -490,7 +501,7 @@
 .trust-bar-indigo {
   background: #0a033c;
   color: #ffffff;
-  padding: 18px 0;
+  padding: 16px 0;
   border-bottom: 3px solid #e91e8c;
 }
 
@@ -498,8 +509,8 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 36px;
-  padding: 6px 12px;
+  gap: 34px;
+  padding: 4px 12px;
   color: #ffffff;
   font-size: 13px;
   font-weight: 600;
@@ -522,9 +533,9 @@
   position: relative;
   background: #ffffff;
   border: 2px solid rgba(18, 5, 110, 0.12);
-  padding: 28px 32px;
-  border-radius: 20px;
-  margin-top: -38px;
+  padding: 26px 30px;
+  border-radius: 22px;
+  margin-top: -36px;
   z-index: 10;
   box-shadow: 0 20px 45px rgba(10, 3, 60, 0.12);
 }
@@ -558,32 +569,26 @@
   box-shadow: 0 0 0 3px rgba(233, 30, 140, 0.18);
 }
 
-.field-textarea {
-  min-height: 88px;
-  padding: 12px 13px;
-  resize: vertical;
-}
-
 /* ===== SECCIONES Y TARJETAS ===== */
 .section {
-  padding: 76px 0;
+  padding: 72px 0;
 }
 
 .section-indigo {
   background: linear-gradient(135deg, #12056e 0%, #1b0994 100%);
   color: #ffffff;
-  padding: 80px 0;
+  padding: 76px 0;
   position: relative;
   overflow: hidden;
 }
 
 .section-soft {
   background: #f6f5ff;
-  padding: 76px 0;
+  padding: 72px 0;
 }
 
 .section-title {
-  font-size: clamp(1.75rem, 3vw, 2.35rem);
+  font-size: clamp(1.7rem, 2.8vw, 2.3rem);
   font-weight: 800;
   line-height: 1.22;
   color: #0a033c;
@@ -596,18 +601,18 @@
 .section-subtitle {
   color: #2b2358;
   font-size: 15px;
-  line-height: 1.75;
-  margin-top: 12px;
+  line-height: 1.7;
+  margin-top: 10px;
 }
 
 .section-indigo .section-subtitle {
-  color: rgba(255, 255, 255, 0.86);
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .benefit-card {
   border: 1.5px solid rgba(18, 5, 110, 0.1);
-  border-radius: 18px;
-  padding: 28px;
+  border-radius: 20px;
+  padding: 26px;
   background: #ffffff;
   color: #0a033c;
   box-shadow: 0 10px 28px rgba(10, 3, 60, 0.05);
@@ -625,8 +630,8 @@
 
 .icon-tile {
   display: inline-flex;
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   border-radius: 14px;
   align-items: center;
   justify-content: center;
@@ -641,13 +646,56 @@
   box-shadow: 0 6px 16px rgba(233, 30, 140, 0.28);
 }
 
-/* ===== TIMELINE DE PROCESO (ESTILO LINA CARDONA) ===== */
+/* ===== PÍLDORAS DE FILTRO (COMPARADOR E ISAPRES) ===== */
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  border: 1.5px solid rgba(18, 5, 110, 0.16);
+  background: #ffffff;
+  color: #12056e;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.filter-pill:hover {
+  border-color: #e91e8c;
+  color: #e91e8c;
+}
+
+.filter-pill-active {
+  background: linear-gradient(90deg, #e91e8c 0%, #f01e8e 100%);
+  color: #ffffff !important;
+  border-color: transparent;
+  box-shadow: 0 8px 20px rgba(233, 30, 140, 0.32);
+}
+
+/* ===== BARRA DE PROGRESO / BONIFICACIÓN ===== */
+.coverage-bar-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(18, 5, 110, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.coverage-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #12056e 0%, #e91e8c 100%);
+}
+
+/* ===== TIMELINE DE PROCESO ===== */
 .timeline-step {
   display: grid;
-  grid-template-columns: 54px 1fr;
-  gap: 20px;
+  grid-template-columns: 52px 1fr;
+  gap: 18px;
   position: relative;
-  padding-bottom: 32px;
+  padding-bottom: 28px;
 }
 
 .timeline-step:last-child {
@@ -661,8 +709,8 @@
 }
 
 .timeline-dot {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background: linear-gradient(135deg, #e91e8c 0%, #f01e8e 100%);
   color: #ffffff;
@@ -693,12 +741,12 @@
 .page-heading {
   background: linear-gradient(135deg, #12056e 0%, #1b0994 100%);
   color: #ffffff;
-  padding: 60px 0;
+  padding: 56px 0;
   border-bottom: 4px solid #e91e8c;
 }
 
 .page-heading h1 {
-  font-size: clamp(2rem, 3.5vw, 2.75rem);
+  font-size: clamp(1.9rem, 3.3vw, 2.65rem);
   font-weight: 800;
   color: #ffffff;
 }
@@ -712,7 +760,7 @@
   background: #0a033c;
   color: #ffffff;
   border-top: 4px solid #e91e8c;
-  padding: 48px 0 32px;
+  padding: 46px 0 30px;
 }
 
 .footer .wordmark {
@@ -722,11 +770,11 @@
 
 .footer-legal {
   font-size: 11px;
-  line-height: 1.8;
+  line-height: 1.75;
   color: rgba(255, 255, 255, 0.68);
-  margin-top: 28px;
+  margin-top: 26px;
   border-top: 1px solid rgba(255, 255, 255, 0.14);
-  padding-top: 22px;
+  padding-top: 20px;
 }
 
 /* ===== BOTÓN FLOTANTE DE WHATSAPP (+56 9 4000 9671) ===== */
@@ -768,15 +816,19 @@
 }
 
 .plan-price {
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 800;
   color: #12056e;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 960px) {
   .hero-grid {
     grid-template-columns: 1fr;
-    gap: 36px;
+    gap: 34px;
+  }
+
+  .hero-photo-frame {
+    height: 360px;
   }
 }
 
@@ -784,36 +836,45 @@
   .site-container {
     padding: 0 18px;
   }
+
   .site-header {
-    height: 74px;
+    height: 72px;
     gap: 12px;
   }
+
   .wordmark {
     font-size: 19px;
   }
+
   .desktop-nav {
     display: none;
   }
+
   .hero {
-    padding: 40px 0 64px;
+    padding: 36px 0 60px;
   }
+
   .hero-photo-frame {
-    height: 240px;
+    height: 270px;
   }
+
   .quote-panel {
-    padding: 22px 18px;
-    margin-top: -26px;
+    padding: 20px 18px;
+    margin-top: -24px;
   }
+
   .section,
   .section-indigo,
   .section-soft {
-    padding: 52px 0;
+    padding: 50px 0;
   }
+
   .trust-strip {
-    gap: 16px;
+    gap: 14px;
     font-size: 11px;
     justify-content: flex-start;
   }
+
   .whatsapp-float {
     bottom: 16px;
     right: 16px;
@@ -823,6 +884,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {

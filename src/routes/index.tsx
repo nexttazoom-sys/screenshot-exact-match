@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import {
   ArrowRight,
@@ -13,7 +13,7 @@ import {
   TrendingUp,
   PhoneCall,
   Star,
-  CheckCircle2,
+  SlidersHorizontal,
 } from "lucide-react";
 import family from "@/assets/familia-salud.jpg";
 import { Benefits } from "@/components/benefits";
@@ -32,8 +32,8 @@ import { pageHead } from "@/components/site-shell";
 export const Route = createFileRoute("/")({
   head: () =>
     pageHead(
-      "Asesoría Independiente 100% Gratuita para elegir tu Plan de Salud",
-      "Si sube tu sueldo, sube tu 7% de salud, pero eso no garantiza mejor cobertura. Te ayudamos gratis a obtener la mejor cobertura posible por tu presupuesto.",
+      "Asesoría Independiente 100% Gratuita para el Plan de Salud de tu Familia",
+      "Protege a tu familia y optimiza tu 7% de salud en Chile. Compara Colmena, Banmédica, Consalud, CruzBlanca, Nueva Masvida, Vida Tres y Esencial con asesoría 100% gratuita.",
     ),
   component: Index,
 });
@@ -41,28 +41,23 @@ export const Route = createFileRoute("/")({
 const processSteps = [
   {
     n: "1",
-    title: "Cuéntanos tu caso en menos de 2 minutos",
-    text: `Completa tus datos básicos en el formulario o escríbenos directo por WhatsApp al ${WHATSAPP_DISPLAY}.`,
+    title: "Conversemos sobre tu familia",
+    text: `Cuéntanos por formulario o WhatsApp (${WHATSAPP_DISPLAY}) quiénes integran tu hogar y en qué clínicas prefieren atenderse.`,
   },
   {
     n: "2",
-    title: "Analizamos tu 7% legal y tu presupuesto",
-    text: "Evaluamos cuánto estás cotizando hoy (especialmente si subió tu sueldo) y si tienes cargas familiares.",
+    title: "Revisamos cómo rinde tu 7%",
+    text: "Calculamos tu cotización legal actual para ver si un aumento de sueldo te permite acceder a un plan superior sin pagar de más.",
   },
   {
     n: "3",
-    title: "Comparamos planes y redes clínicas",
-    text: "Buscamos entre las alternativas disponibles aquellas que entreguen mayor bonificación hospitalaria y ambulatoria en tus clínicas preferidas.",
+    title: "Comparamos todas las Isapres",
+    text: "Contrastamos lado a lado las mejores opciones en Colmena, Banmédica, Consalud, CruzBlanca, Nueva Masvida, Vida Tres y Esencial.",
   },
   {
     n: "4",
-    title: "Recibes una propuesta clara y sin letra chica",
-    text: "Te explicamos en lenguaje simple qué cubre cada opción, cómo operan los topes y cuánto ahorrarías o mejorarías.",
-  },
-  {
-    n: "5",
-    title: "Te acompañamos gratis de principio a fin",
-    text: "Tú decides con total libertad y sin presiones. Nuestro acompañamiento es 100% gratuito antes, durante y después.",
+    title: "Eliges con calma y respaldo gratuito",
+    text: "Te explicamos cada alternativa en simple y te acompañamos sin costo en todo el proceso.",
   },
 ];
 
@@ -70,23 +65,23 @@ const testimonials = [
   {
     initials: "MJ",
     name: "María José R.",
-    profile: "Subió su sueldo · 2 cargas familiares",
+    profile: "Mamá de 2 niños · Santiago",
     quote:
-      "Me habían subido el sueldo dos veces y mi 7% era mucho más alto, pero seguía con un plan antiguo. Con la asesoría gratuita pasé a un plan con mucha mejor cobertura clínica por el mismo 7%.",
+      "Buscábamos buena cobertura pediátrica sin descuidar el presupuesto de la casa. Nos mostraron cómo nuestro 7% alcanzaba para una clínica mucho mejor.",
   },
   {
     initials: "RP",
     name: "Rodrigo P.",
-    profile: "Optimización de 7% individual",
+    profile: "Actualizó su plan tras ascenso",
     quote:
-      "No sabía que al subir mi renta estaba generando excedentes sin mejorar mis topes hospitalarios. Me explicaron todo por WhatsApp con mucha paciencia y sin costo.",
+      "Me había subido el sueldo y seguía con un plan antiguo. En una tarde por WhatsApp comparamos opciones y mejoré mi cobertura hospitalaria sin pagar extra.",
   },
   {
     initials: "CV",
-    name: "Carolina V.",
-    profile: "Evaluación familiar e independiente",
+    name: "Carolina y Tomás",
+    profile: "Plan familiar en región",
     quote:
-      "Excelente atención, cercana y transparente. Compararon opciones según la clínica donde atiendo a mis hijos y resolvieron todas mis dudas en el mismo día.",
+      "Trato súper humano, cálido y claro. Nos explicaron las diferencias entre cada Isapre en nuestra región y resolvieron todas nuestras dudas gratis.",
   },
 ];
 
@@ -108,19 +103,19 @@ function Index() {
   };
 
   const heroWaHref = buildWhatsAppUrl(
-    "Hola, vi su página web y quiero recibir Asesoría Independiente 100% Gratuita para elegir u optimizar mi plan de salud según mi 7%.",
+    "Hola, vi su página web y me gustaría recibir asesoría gratuita para elegir o mejorar el plan de salud de mi familia.",
   );
 
   const quickQuoteWaHref = buildAdvisoryWhatsAppUrl({
     salary: q.salary,
     dependents: q.dependents,
     region: q.region,
-    main_question: `Quiero evaluar qué cobertura puedo obtener con mi 7% estimado de ${money(Math.round(q.salary * 0.07))}/mes`,
+    main_question: `Quiero evaluar qué cobertura familiar puedo obtener con mi 7% estimado de ${money(Math.round(q.salary * 0.07))}/mes`,
   });
 
   return (
     <>
-      {/* ===================== HERO DE ALTO CONTRASTE (#12056E / #1B0994 + #E91E8C + #FFFFFF) ===================== */}
+      {/* ===================== HERO FAMILIAR CON FOTO PROTAGONISTA ===================== */}
       <section className="hero">
         <div className="site-container hero-grid">
           <div>
@@ -129,47 +124,47 @@ function Index() {
             </span>
 
             <h1>
-              Si sube tu sueldo, sube tu 7%… <span>¿pero mejoró tu cobertura de salud?</span>
+              Protege la salud de tu familia con un plan que <span>sí aproveche tu 7%.</span>
             </h1>
 
             <p className="hero-description">
-              Te ayudamos de forma <strong>100% gratuita, cercana e independiente</strong> a elegir
-              y optimizar tu plan de salud en Chile para que obtengas{" "}
-              <strong>la mejor cobertura posible por tu presupuesto</strong> y las necesidades
-              reales de tu familia.
+              Te acompañamos con cercanía, calidez y <strong>sin ningún costo</strong> a comparar
+              todas las Isapres de Chile, cuidando tanto el bienestar de quienes más quieres como el
+              presupuesto de tu hogar.
             </p>
 
-            {/* Gancho de valor principal inspirado en la imagen adjunta */}
+            {/* Gancho de valor claro y conciso */}
             <div className="hook-bubble">
-              <span className="hook-bubble-badge">¿POR QUÉ REVISAR TU PLAN HOY?</span>
+              <span className="hook-bubble-badge">CONSEJO PARA TU PRESUPUESTO FAMILIAR</span>
               <p className="text-sm sm:text-[15px] font-extrabold text-[#12056E] leading-snug">
-                Cuando aumenta tu sueldo, tu cotización legal del 7% sube automáticamente, pero eso{" "}
+                Si subió tu sueldo, tu 7% legal aumentó automáticamente, pero{" "}
                 <span className="text-[#E91E8C] underline">
-                  no garantiza mejor cobertura ni un plan bien ajustado
+                  tu plan no mejora su cobertura por sí solo
                 </span>
                 .
               </p>
-              <p className="text-xs text-[#0A033C]/80 mt-2 leading-5">
-                Analizamos tu caso sin costo para transformar ese aporte obligatorio en mejores
-                clínicas, mayor bonificación hospitalaria y tranquilidad para ti.
+              <p className="text-xs text-[#0A033C]/80 mt-1.5 leading-5">
+                Revisamos gratis si con lo que ya cotizas hoy puedes acceder a mejores clínicas y
+                mayor bonificación para ti y tus cargas.
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-3.5 mt-7">
+            <div className="flex flex-wrap gap-3 mt-6">
               <a href={heroWaHref} target="_blank" rel="noreferrer" className="btn-magenta">
                 <MessageCircle size={18} />
-                Asesoría Gratis por WhatsApp ({WHATSAPP_DISPLAY})
+                Hablar con un Asesor ({WHATSAPP_DISPLAY})
               </a>
-              <a href="#cotizar" className="btn-white-outline">
-                Evaluar mi 7% y Cotizar <ArrowRight size={17} />
+              <a href="#comparador" className="btn-white-outline">
+                <SlidersHorizontal size={16} />
+                Comparar Planes e Isapres
               </a>
             </div>
 
-            <div className="flex flex-wrap gap-2.5 mt-6">
+            <div className="flex flex-wrap gap-2.5 mt-5">
               {[
-                "Asesoría 100% Gratuita",
-                "Sin compromiso ni letra chica",
-                `Atención directa ${WHATSAPP_DISPLAY}`,
+                "Comparamos las 7 Isapres",
+                "100% gratis y sin compromiso",
+                "Atención humana y cercana",
               ].map((badge) => (
                 <span
                   key={badge}
@@ -181,55 +176,62 @@ function Index() {
             </div>
           </div>
 
-          {/* Tarjeta visual derecha conservando la imagen original + sello de confianza estilo Lina Cardona */}
-          <div className="hero-visual-card">
-            <img
-              src={family}
-              className="hero-photo-frame"
-              width={1536}
-              height={1024}
-              alt="Familia disfrutando un momento juntos en un parque de Santiago"
-              fetchPriority="high"
-            />
+          {/* Fotografía de la familia con rol protagonista y encuadre cálido */}
+          <div className="hero-family-showcase">
+            <div className="hero-photo-wrapper">
+              <img
+                src={family}
+                className="hero-photo-frame"
+                width={1536}
+                height={1024}
+                alt="Familia disfrutando un momento juntos en un parque de Santiago"
+                fetchPriority="high"
+              />
+              <div className="hero-photo-gradient" />
 
-            <div className="hero-letter-box">
-              <div className="flex items-start gap-3.5">
-                <span className="brand-seal shrink-0 !w-11 !h-11" aria-hidden="true">
-                  <span className="brand-cross" />
-                </span>
-                <div>
-                  <p className="text-xs sm:text-sm font-extrabold text-[#12056E] italic leading-relaxed">
-                    “Nuestro compromiso es acompañarte paso a paso para que elijas el plan de salud
-                    que realmente necesitas, aprovechando cada peso de tu 7%.”
-                  </p>
-                  <div className="flex flex-wrap items-center justify-between gap-2 mt-3 pt-2.5 border-t border-dashed border-[#12056E]/20 text-[11px]">
-                    <span className="font-extrabold text-[#E91E8C] uppercase tracking-wider">
-                      Asesoría Independiente en Salud
-                    </span>
-                    <a
-                      href={heroWaHref}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="font-extrabold text-[#12056E] hover:text-[#E91E8C] flex items-center gap-1"
-                    >
-                      <PhoneCall size={12} className="text-[#E91E8C]" /> {WHATSAPP_DISPLAY}
-                    </a>
+              <div className="hero-photo-caption">
+                <div className="flex items-center gap-2.5">
+                  <span className="icon-tile icon-tile-magenta !w-10 !h-10 shrink-0">
+                    <Heart size={20} />
+                  </span>
+                  <div>
+                    <p className="font-extrabold text-white text-xs sm:text-sm leading-tight">
+                      El bienestar de tu hogar, en buenas manos
+                    </p>
+                    <p className="text-white/85 text-[11px]">
+                      Planes individuales, maternidad y familia en todo Chile
+                    </p>
                   </div>
                 </div>
+                <span className="bg-white text-[#12056E] text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm">
+                  100% Gratuita
+                </span>
               </div>
             </div>
 
-            <div className="hero-note">
-              <span className="icon-tile icon-tile-magenta !w-10 !h-10 shrink-0">
-                <ShieldCheck size={22} />
-              </span>
-              <div>
-                <p className="font-extrabold text-white text-xs sm:text-sm">
-                  Obtén la mejor cobertura por tu presupuesto
-                </p>
-                <p className="text-white/80 text-[11px] mt-0.5">
-                  Orientación personalizada y 100% sin costo para cotizantes en todo Chile.
-                </p>
+            <div className="hero-letter-box">
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="brand-seal shrink-0 !w-10 !h-10" aria-hidden="true">
+                    <span className="brand-cross" />
+                  </span>
+                  <div>
+                    <p className="text-xs font-extrabold text-[#12056E]">
+                      Orientación cercana, transparente y pensada en tu familia
+                    </p>
+                    <p className="text-[11px] text-[#0A033C]/75">
+                      Resolvemos tus dudas paso a paso por WhatsApp o teléfono.
+                    </p>
+                  </div>
+                </div>
+                <a
+                  href={heroWaHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-xs font-extrabold text-[#E91E8C] hover:underline inline-flex items-center gap-1"
+                >
+                  <PhoneCall size={13} /> {WHATSAPP_DISPLAY}
+                </a>
               </div>
             </div>
           </div>
@@ -244,13 +246,13 @@ function Index() {
               <ShieldCheck /> Asesoría Independiente 100% Gratuita
             </span>
             <span>
-              <TrendingUp /> Optimización de tu 7% cuando sube tu sueldo
+              <TrendingUp /> Optimización del 7% familiar
             </span>
             <span>
-              <Heart /> Planes individuales y familiares a medida
+              <Heart /> Comparativa de las 7 Isapres
             </span>
             <span>
-              <BadgeCheck /> Respuesta directa por WhatsApp {WHATSAPP_DISPLAY}
+              <BadgeCheck /> WhatsApp directo {WHATSAPP_DISPLAY}
             </span>
           </div>
         </div>
@@ -259,13 +261,13 @@ function Index() {
       {/* ===================== SIMULADOR RÁPIDO DE 7% ===================== */}
       <section className="site-container">
         <div className="quote-panel">
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div>
               <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#E91E8C]">
-                CALCULADORA RÁPIDA DE PRESUPUESTO Y 7%
+                SIMULADOR RÁPIDO DE PRESUPUESTO
               </span>
               <h2 className="text-lg sm:text-xl font-extrabold text-[#12056E] mt-0.5">
-                Descubre cuánto es tu 7% hoy y simula escenarios de cobertura
+                Calcula tu 7% mensual y descubre a qué nivel de plan puedes acceder
               </h2>
             </div>
             <span className="text-xs font-bold text-[#12056E] bg-[#F6F5FF] border border-[#12056E]/15 px-3.5 py-1.5 rounded-full flex gap-2 items-center">
@@ -277,14 +279,12 @@ function Index() {
           <form onSubmit={start}>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.15fr_.65fr_.85fr_1.2fr_auto] gap-4 items-end">
               <QuoteFields compact value={q} onChange={setQ} />
-              <div className="flex flex-col sm:flex-row lg:flex-col gap-2">
-                <button
-                  type="submit"
-                  className="btn-magenta h-[46px] !px-5 !text-xs whitespace-nowrap"
-                >
-                  Simular mi 7% ahora <ArrowRight size={15} />
-                </button>
-              </div>
+              <button
+                type="submit"
+                className="btn-magenta h-[46px] !px-5 !text-xs whitespace-nowrap"
+              >
+                Ver escenarios en UF <ArrowRight size={15} />
+              </button>
             </div>
 
             {error && (
@@ -296,8 +296,7 @@ function Index() {
             <div className="mt-4 pt-3 border-t border-border flex flex-wrap items-center justify-between gap-3 text-[11px] text-[#0A033C]/75">
               <span className="flex items-center gap-1.5">
                 <LockKeyhole size={13} className="text-[#12056E]" />
-                Simulación privada y referencial. Te orientamos gratis sobre opciones reales para tu
-                presupuesto.
+                Cálculo inmediato y confidencial para orientar el presupuesto de tu hogar.
               </span>
               <a
                 href={quickQuoteWaHref}
@@ -305,251 +304,135 @@ function Index() {
                 rel="noreferrer"
                 className="font-extrabold text-[#E91E8C] hover:underline inline-flex items-center gap-1"
               >
-                <MessageCircle size={13} /> ¿Prefieres enviar este 7% directo por WhatsApp (
-                {WHATSAPP_DISPLAY})?
+                <MessageCircle size={13} /> Enviar mi 7% directo por WhatsApp ({WHATSAPP_DISPLAY})
               </a>
             </div>
           </form>
         </div>
       </section>
 
-      {/* ===================== SECCIÓN GANCHO DE VALOR / FORMATO CARTA (INSPIRADO EN LINA CARDONA + IMAGEN ADJUNTA) ===================== */}
-      <section className="section">
-        <div className="site-container grid md:grid-cols-[0.45fr_0.55fr] gap-10 lg:gap-14 items-center">
-          <div className="rounded-3xl bg-gradient-to-br from-[#12056E] to-[#1B0994] text-white p-7 md:p-9 shadow-xl relative overflow-hidden">
-            <span className="inline-block bg-[#E91E8C] text-white text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full mb-4">
-              REALIDAD PREVISIONAL EN CHILE
-            </span>
-            <h3 className="text-2xl font-extrabold leading-snug">
-              “Si sube tu sueldo, sube tu 7% de salud… pero tu cobertura no mejora automáticamente.”
-            </h3>
-            <p className="text-xs sm:text-sm text-white/85 leading-6 mt-4">
-              Muchos cotizantes ven aumentar su descuento legal mes a mes cuando crecen
-              profesionalmente, pero mantienen exactamente el mismo plan que contrataron años atrás.
-            </p>
-            <div className="mt-6 pt-5 border-t border-white/20 space-y-2.5 text-xs">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-[#F01E8E] shrink-0" />
-                <span>Revisamos si tu 7% actual te alcanza para una mejor red de clínicas.</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-[#F01E8E] shrink-0" />
-                <span>
-                  Evitamos que pagues diferencias innecesarias por coberturas mal ajustadas.
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-[#F01E8E] shrink-0" />
-                <span>Servicio 100% gratuito, transparente y sin compromiso.</span>
-              </div>
-            </div>
-          </div>
+      {/* ===================== PILARES + COMPARADOR INTERACTIVO + BENEFICIOS DE CADA ISAPRE ===================== */}
+      <Benefits />
 
+      {/* ===================== CÓMO TE ACOMPAÑAMOS + TESTIMONIOS FAMILIARES ===================== */}
+      <section className="section bg-[#F6F5FF]">
+        <div className="site-container grid lg:grid-cols-[0.95fr_1.05fr] gap-12 items-start">
           <div>
-            <p className="eyebrow">SOBRE NUESTRA ASESORÍA INDEPENDIENTE</p>
+            <p className="eyebrow">PASO A PASO SIN COMPLICACIONES</p>
             <h2 className="section-title mt-2">
-              Te acompañamos a conseguir la <span className="text-[#E91E8C]">mejor cobertura</span>{" "}
-              por tu presupuesto
+              Elegir bien para tu familia es <span className="text-[#E91E8C]">así de simple</span>
             </h2>
-            <p className="section-subtitle">
-              Elegir o actualizar un plan de salud en Chile no tiene por qué ser confuso ni lleno de
-              letra chica. Nuestra misión es traducir las tablas, porcentajes y topes en una
-              recomendación honesta, pensada en tu realidad laboral y familiar.
-            </p>
-            <p className="section-subtitle !mt-3">
-              Ya sea que haya subido tu sueldo y quieras aprovechar mejor tu nuevo 7%, que busques
-              agregar o ajustar cargas familiares, o que quieras comparar alternativas con mejor
-              bonificación hospitalaria y ambulatoria, te guiamos paso a paso sin costo para ti.
+            <p className="section-subtitle mb-7">
+              Nos encargamos de comparar tablas, topes y redes clínicas por ti, para que decidas con
+              información clara y sin presiones.
             </p>
 
-            <div className="flex flex-wrap gap-2.5 mt-6">
-              {[
-                "Asesoría 100% Gratuita",
-                "Optimización del 7% legal",
-                "Planes individuales y familiares",
-                "Trato humano y cercano",
-              ].map((tag) => (
-                <span
-                  key={tag}
-                  className="bg-[#F6F5FF] border border-[#12056E]/15 text-[#12056E] text-xs font-extrabold px-3.5 py-1.5 rounded-full"
-                >
-                  {tag}
-                </span>
+            <div>
+              {processSteps.map((s) => (
+                <div key={s.n} className="timeline-step">
+                  <div className="timeline-dot-col">
+                    <div className="timeline-dot">{s.n}</div>
+                    <div className="timeline-line" />
+                  </div>
+                  <div className="pt-1">
+                    <h3 className="font-extrabold text-base text-[#12056E]">{s.title}</h3>
+                    <p className="text-xs sm:text-sm text-[#0A033C]/80 mt-1 leading-6">{s.text}</p>
+                  </div>
+                </div>
               ))}
             </div>
-
-            <div className="mt-7 flex flex-wrap gap-3">
-              <a
-                href={heroWaHref}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-magenta !text-xs"
-              >
-                <MessageCircle size={16} />
-                Hablar ahora por WhatsApp ({WHATSAPP_DISPLAY})
-              </a>
-              <Link
-                to="/asesoria"
-                className="inline-flex items-center gap-2 rounded-full border-2 border-[#12056E] text-[#12056E] hover:bg-[#12056E] hover:text-white font-extrabold text-xs px-5 py-3 transition-colors"
-              >
-                Conocer más sobre la asesoría <ArrowRight size={15} />
-              </Link>
-            </div>
           </div>
-        </div>
-      </section>
 
-      {/* ===================== BENEFICIOS Y VENTAJAS ===================== */}
-      <div className="bg-[#F6F5FF]">
-        <Benefits />
-      </div>
-
-      {/* ===================== CÓMO TRABAJAMOS (TIMELINE ESTILO LINA CARDONA) ===================== */}
-      <section className="section">
-        <div className="site-container grid md:grid-cols-[0.9fr_1.1fr] gap-12 items-start">
           <div>
-            <p className="eyebrow">CÓMO TRABAJAMOS</p>
-            <h2 className="section-title mt-2">
-              Mejorar tu plan de salud es <span className="text-[#E91E8C]">así de simple.</span>
-            </h2>
-            <p className="section-subtitle">
-              Un proceso claro, cercano y paso a paso para que siempre sepas qué estamos evaluando y
-              tomes una decisión con total tranquilidad.
+            <p className="eyebrow">CONFIANZA Y CERCANÍA</p>
+            <h2 className="section-title mt-2">Familias que ya mejoraron su cobertura</h2>
+            <p className="section-subtitle mb-7">
+              Experiencias reales de cotizantes que ajustaron su plan de salud a las necesidades de
+              su hogar.
             </p>
 
-            <div className="mt-7 p-6 rounded-2xl bg-[#F6F5FF] border border-[#12056E]/15">
-              <p className="text-xs font-extrabold uppercase tracking-wider text-[#E91E8C]">
-                CONTACTO DIRECTO Y SIN ESPERAS
-              </p>
-              <p className="text-base font-extrabold text-[#12056E] mt-1">
-                WhatsApp: {WHATSAPP_DISPLAY}
-              </p>
-              <p className="text-xs text-[#0A033C]/80 mt-2 leading-5">
-                ¿Tienes tu liquidación o sabes cuánto es tu 7% aproximado? Escríbenos directo y lo
-                revisamos juntos hoy mismo.
-              </p>
-              <a
-                href={heroWaHref}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-magenta mt-4 !py-2.5 !px-5 !text-xs"
-              >
-                <MessageCircle size={15} />
-                Escribir al {WHATSAPP_DISPLAY}
-              </a>
+            <div className="grid gap-4">
+              {testimonials.map((t) => (
+                <article key={t.name} className="benefit-card !p-5">
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <div className="flex items-center gap-3">
+                      <span className="w-9 h-9 rounded-full bg-[#12056E] text-white font-extrabold text-xs flex items-center justify-center border-2 border-[#E91E8C]">
+                        {t.initials}
+                      </span>
+                      <div>
+                        <p className="text-xs font-extrabold text-[#12056E]">{t.name}</p>
+                        <p className="text-[11px] text-[#0A033C]/70">{t.profile}</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-0.5 text-[#E91E8C]" aria-label="5 de 5 estrellas">
+                      {Array.from({ length: 5 }).map((_, idx) => (
+                        <Star key={idx} size={13} fill="#E91E8C" />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-xs sm:text-sm text-[#0A033C]/90 italic leading-6">
+                    “{t.quote}”
+                  </p>
+                </article>
+              ))}
             </div>
-          </div>
-
-          <div className="pt-2">
-            {processSteps.map((s) => (
-              <div key={s.n} className="timeline-step">
-                <div className="timeline-dot-col">
-                  <div className="timeline-dot">{s.n}</div>
-                  <div className="timeline-line" />
-                </div>
-                <div className="pt-1">
-                  <h3 className="font-extrabold text-base text-[#12056E]">{s.title}</h3>
-                  <p className="text-xs sm:text-sm text-[#0A033C]/80 mt-1.5 leading-6">{s.text}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== TESTIMONIOS (ESTILO LINA CARDONA) ===================== */}
-      <section className="section-soft">
-        <div className="site-container">
-          <div className="text-center max-w-2xl mx-auto mb-11">
-            <p className="eyebrow">EXPERIENCIAS REALES</p>
-            <h2 className="section-title mt-2">Lo que dicen quienes ya optimizaron su 7%</h2>
-            <p className="section-subtitle">
-              Personas y familias que transformaron su cotización de salud en una mejor cobertura
-              con orientación gratuita.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.map((t) => (
-              <article key={t.name} className="benefit-card flex flex-col justify-between">
-                <div>
-                  <div className="flex gap-1 text-[#E91E8C] mb-3" aria-label="5 de 5 estrellas">
-                    {Array.from({ length: 5 }).map((_, idx) => (
-                      <Star key={idx} size={15} fill="#E91E8C" />
-                    ))}
-                  </div>
-                  <p className="text-xs sm:text-sm text-[#0A033C] italic leading-6">“{t.quote}”</p>
-                </div>
-                <div className="flex items-center gap-3 mt-6 pt-4 border-t border-border">
-                  <span className="w-10 h-10 rounded-full bg-[#12056E] text-white font-extrabold text-xs flex items-center justify-center border-2 border-[#E91E8C]">
-                    {t.initials}
-                  </span>
-                  <div>
-                    <p className="text-xs font-extrabold text-[#12056E]">{t.name}</p>
-                    <p className="text-[11px] text-[#0A033C]/70">{t.profile}</p>
-                  </div>
-                </div>
-              </article>
-            ))}
           </div>
         </div>
       </section>
 
       {/* ===================== SECCIÓN PRINCIPAL DE ASESORÍA Y FORMULARIO (#cotizar) ===================== */}
       <section id="cotizar" className="section-indigo">
-        <div className="site-container grid lg:grid-cols-[0.88fr_1.12fr] gap-12 items-start">
+        <div className="site-container grid lg:grid-cols-[0.85fr_1.15fr] gap-12 items-start">
           <div>
-            <span className="eyebrow-pill">SOLICITA TU EVALUACIÓN SIN COSTO</span>
+            <span className="eyebrow-pill">ORIENTACIÓN GRATUITA Y PERSONALIZADA</span>
             <h2 className="section-title mt-4">
-              Cuéntanos tu caso y obtén la mejor cobertura para tu presupuesto
+              Conversemos sobre el plan ideal para ti y tu familia
             </h2>
             <p className="section-subtitle">
-              Completa el formulario con tus datos básicos o abre directamente nuestro chat de
-              WhatsApp al <strong className="text-[#F01E8E]">{WHATSAPP_DISPLAY}</strong>. Te
-              responderemos de manera personal, clara y sin compromiso.
+              Déjanos tus datos básicos o abre directamente nuestro WhatsApp{" "}
+              <strong className="text-[#F01E8E]">{WHATSAPP_DISPLAY}</strong> con tu resumen listo.
             </p>
 
-            <div className="space-y-4 mt-7 text-xs sm:text-sm text-white/90">
-              <div className="flex items-start gap-3">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#F01E8E] mt-1.5 shrink-0" />
+            <ul className="space-y-3.5 mt-6 text-xs sm:text-sm text-white/90">
+              <li className="flex items-start gap-2.5">
+                <Check size={17} className="text-[#F01E8E] shrink-0 mt-0.5" />
                 <span>
-                  <strong>Especialistas en optimizar tu 7%:</strong> Si subió tu sueldo, verificamos
-                  qué planes superiores puedes alcanzar sin pagar de más.
+                  <strong>Comparativa imparcial:</strong> Evaluamos Colmena, Banmédica, Consalud,
+                  CruzBlanca, Nueva Masvida, Vida Tres y Esencial.
                 </span>
-              </div>
-              <div className="flex items-start gap-3">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#F01E8E] mt-1.5 shrink-0" />
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Check size={17} className="text-[#F01E8E] shrink-0 mt-0.5" />
                 <span>
-                  <strong>Asesoría 100% Gratuita e Independiente:</strong> Nuestro foco es tu
-                  tranquilidad y la de tu familia.
+                  <strong>Cuidado del presupuesto familiar:</strong> Buscamos la mayor bonificación
+                  posible dentro de tu 7% legal.
                 </span>
-              </div>
-              <div className="flex items-start gap-3">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#F01E8E] mt-1.5 shrink-0" />
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Check size={17} className="text-[#F01E8E] shrink-0 mt-0.5" />
                 <span>
-                  <strong>Respuesta rápida por WhatsApp:</strong> Te explicamos cada alternativa en
-                  lenguaje simple y transparente.
+                  <strong>100% gratuito y sin compromiso:</strong> Tú tienes siempre la última
+                  palabra.
                 </span>
-              </div>
-            </div>
+              </li>
+            </ul>
 
-            <div className="mt-8 p-5 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-xs">
-              <p className="text-xs font-extrabold uppercase tracking-wider text-[#F01E8E]">
-                ¿PREFIERES ESCRIBIRNOS DIRECTO AHORA?
+            <div className="mt-7 p-5 rounded-2xl bg-white/10 border border-white/20">
+              <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#F01E8E]">
+                CANAL DIRECTO DE WHATSAPP
               </p>
-              <p className="text-lg font-extrabold text-white mt-1">{WHATSAPP_DISPLAY}</p>
+              <p className="text-xl font-extrabold text-white mt-1">{WHATSAPP_DISPLAY}</p>
               <p className="text-xs text-white/80 mt-1">
-                Haz clic abajo para iniciar una conversación directa por WhatsApp con un mensaje
-                predeterminado.
+                Atención rápida y cercana para resolver tus dudas en minutos.
               </p>
               <a
                 href={heroWaHref}
                 target="_blank"
                 rel="noreferrer"
-                className="btn-magenta mt-4 w-full sm:w-auto"
+                className="btn-magenta mt-4 w-full sm:w-auto !text-xs"
               >
-                <MessageCircle size={17} />
-                Chatear ahora al {WHATSAPP_DISPLAY}
+                <MessageCircle size={16} />
+                Iniciar chat en WhatsApp
               </a>
             </div>
           </div>
@@ -557,46 +440,17 @@ function Index() {
           <div className="bg-white text-[#0A033C] rounded-3xl p-6 sm:p-8 shadow-2xl border-2 border-[#E91E8C]/30">
             <div className="mb-5 pb-4 border-b border-border">
               <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#E91E8C]">
-                FORMULARIO DE ASESORÍA RÁPIDA · 100% GRATUITA
+                SOLICITUD RÁPIDA · 100% SIN COSTO
               </span>
               <h3 className="text-xl font-extrabold text-[#12056E] mt-1">
-                Evalúa y optimiza tu plan de salud
+                Recibe tu comparativa personalizada
               </h3>
               <p className="text-xs text-[#0A033C]/75 mt-1">
-                Ingresa tus datos básicos para enviarnos tu solicitud o abrir directamente WhatsApp
-                con tu resumen listo.
+                Completa tus datos para enviarnos tu caso o abrir el chat de WhatsApp con tu
+                resumen.
               </p>
             </div>
             <LeadForm initialSalary={q.salary} initialDependents={q.dependents} />
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== CTA FINAL (ESTILO LINA CARDONA) ===================== */}
-      <section className="section text-center bg-white">
-        <div className="site-container max-w-2xl mx-auto flex flex-col items-center">
-          <span className="brand-seal !w-14 !h-14 mb-5" aria-hidden="true">
-            <span className="brand-cross" />
-          </span>
-          <p className="eyebrow">DA EL SIGUIENTE PASO CON TRANQUILIDAD</p>
-          <h2 className="section-title mt-2">
-            ¿Listo para que tu 7% de salud te entregue la cobertura que mereces?
-          </h2>
-          <p className="section-subtitle">
-            No dejes que un aumento de sueldo se pierda en un plan desactualizado. Recibe hoy tu{" "}
-            <strong>Asesoría Independiente 100% Gratuita</strong> y elige con información clara.
-          </p>
-          <div className="flex flex-wrap justify-center gap-3.5 mt-7">
-            <a href={heroWaHref} target="_blank" rel="noreferrer" className="btn-magenta">
-              <MessageCircle size={18} />
-              Hablar por WhatsApp ({WHATSAPP_DISPLAY})
-            </a>
-            <a
-              href="#cotizar"
-              className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-[#12056E] text-[#12056E] hover:bg-[#12056E] hover:text-white font-extrabold text-sm px-6 py-3.5 transition-colors"
-            >
-              Completar formulario de asesoría
-            </a>
           </div>
         </div>
       </section>

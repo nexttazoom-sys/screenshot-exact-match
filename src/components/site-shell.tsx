@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ShieldCheck, MessageCircle, Phone, Menu, X, Sparkles } from "lucide-react";
+import { ShieldCheck, MessageCircle, Phone, Menu, X, Heart } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { buildWhatsAppUrl, WHATSAPP_DISPLAY } from "@/lib/quote";
@@ -12,7 +12,7 @@ export function Brand({ inverted = false }: { inverted?: boolean }) {
       </span>
       <div>
         <div className={`wordmark ${inverted ? "!text-white" : ""}`}>Tu Plan de Salud</div>
-        <span className="brand-caption">ASESORÍA INDEPENDIENTE · 100% GRATUITA</span>
+        <span className="brand-caption">ASESORÍA FAMILIAR · 100% GRATUITA</span>
       </div>
     </div>
   );
@@ -21,7 +21,7 @@ export function Brand({ inverted = false }: { inverted?: boolean }) {
 export function Header() {
   const [open, setOpen] = useState(false);
   const waHref = buildWhatsAppUrl(
-    "Hola, vengo desde la web y quiero asesoría independiente 100% gratuita para revisar y mejorar mi plan de salud.",
+    "Hola, vengo desde la web y me gustaría recibir asesoría gratuita para comparar Isapres y elegir el mejor plan para mi familia.",
   );
 
   return (
@@ -29,8 +29,8 @@ export function Header() {
       <div className="bg-[#0A033C] text-white text-[11px] py-2 px-4">
         <div className="site-container flex flex-wrap items-center justify-between gap-2">
           <span className="inline-flex items-center gap-1.5 font-semibold">
-            <Sparkles size={13} className="text-[#F01E8E]" />
-            ¿Subió tu sueldo y también tu 7%? Revisamos gratis si puedes tener mejor cobertura.
+            <Heart size={13} className="text-[#F01E8E]" />
+            Cuidamos el bienestar y presupuesto de tu familia · Comparamos las 7 Isapres sin costo.
           </span>
           <a
             href={waHref}
@@ -50,10 +50,10 @@ export function Header() {
 
         <nav className="desktop-nav flex items-center gap-7" aria-label="Navegación principal">
           <Link to="/" className="nav-link">
-            Inicio y Cotizador
+            Inicio
           </Link>
           <Link to="/beneficios" className="nav-link">
-            Optimiza tu 7%
+            Comparador e Isapres
           </Link>
           <Link to="/preguntas-frecuentes" className="nav-link">
             Preguntas frecuentes
@@ -94,10 +94,10 @@ export function Header() {
           aria-label="Navegación móvil"
         >
           <Link className="nav-link" to="/">
-            Inicio y Cotizador
+            Inicio
           </Link>
           <Link className="nav-link" to="/beneficios">
-            Optimiza tu 7% y Coberturas
+            Comparador e Isapres
           </Link>
           <Link className="nav-link" to="/preguntas-frecuentes">
             Preguntas frecuentes
@@ -122,7 +122,7 @@ export function Header() {
 
 export function Footer() {
   const waHref = buildWhatsAppUrl(
-    "Hola, quiero recibir asesoría independiente 100% gratuita para elegir o mejorar mi plan de salud.",
+    "Hola, quiero recibir asesoría independiente 100% gratuita para elegir o mejorar el plan de salud de mi familia.",
   );
 
   return (
@@ -133,38 +133,37 @@ export function Footer() {
             <div>
               <Brand inverted />
               <p className="text-xs text-white/80 mt-4 leading-6 max-w-sm">
-                Asesoría independiente, cercana y <strong>100% gratuita</strong> para ayudarte a
-                elegir y optimizar tu plan de salud en Chile. Si subió tu sueldo y tu 7% aumentó, te
-                ayudamos a conseguir la mejor cobertura posible por tu presupuesto.
+                Orientación familiar, independiente y <strong>100% gratuita</strong> para ayudarte a
+                comparar Isapres y aprovechar al máximo tu 7% legal de salud en todo Chile.
               </p>
               <div className="mt-4 inline-flex items-center gap-2 text-xs text-[#F01E8E] font-bold">
-                <ShieldCheck size={16} /> Tus datos e inquietudes son 100% confidenciales
+                <ShieldCheck size={16} /> Atención confidencial, cercana y sin letra chica
               </div>
             </div>
 
             <div>
               <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#F01E8E] mb-3">
-                Navegación y Ayuda
+                Secciones del Sitio
               </h3>
               <ul className="space-y-2.5 text-xs text-white/80">
                 <li>
                   <Link to="/" className="hover:text-white transition-colors">
-                    Simulador de 7% y Planes
+                    Portada y Simulador de 7%
                   </Link>
                 </li>
                 <li>
                   <Link to="/beneficios" className="hover:text-white transition-colors">
-                    Por qué revisar tu 7% de salud
+                    Comparador de Planes y Guía de Isapres
                   </Link>
                 </li>
                 <li>
                   <Link to="/asesoria" className="hover:text-white transition-colors">
-                    Solicitar evaluación gratuita
+                    Solicitar evaluación familiar gratuita
                   </Link>
                 </li>
                 <li>
                   <Link to="/preguntas-frecuentes" className="hover:text-white transition-colors">
-                    Preguntas frecuentes sobre Isapres y 7%
+                    Preguntas frecuentes
                   </Link>
                 </li>
                 <li>
@@ -187,15 +186,14 @@ export function Footer() {
 
             <div className="bg-[#12056E] border border-[#E91E8C]/40 rounded-2xl p-5">
               <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#F01E8E]">
-                Contacto Directo de Asesoría
+                Contacto Directo Familiar
               </p>
               <p className="text-lg font-extrabold text-white mt-1 flex items-center gap-2">
                 <Phone size={18} className="text-[#E91E8C]" />
                 {WHATSAPP_DISPLAY}
               </p>
               <p className="text-xs text-white/80 mt-2 leading-5">
-                Escríbenos directamente por WhatsApp para revisar tu plan actual o cotizar sin costo
-                ni compromiso.
+                Escríbenos por WhatsApp para revisar tu plan actual o comparar opciones sin costo.
               </p>
               <a
                 href={waHref}
@@ -204,19 +202,20 @@ export function Footer() {
                 className="btn-magenta w-full mt-4 !py-2.5 !text-xs"
               >
                 <MessageCircle size={16} />
-                Iniciar chat en WhatsApp
+                Chatear por WhatsApp
               </a>
             </div>
           </div>
 
           <p className="footer-legal">
-            Servicio de orientación y asesoría independiente 100% gratuita para cotizantes de salud
-            en Chile ({WHATSAPP_DISPLAY}). Este sitio no constituye el portal oficial de ninguna
-            aseguradora en particular. Los valores, escenarios y coberturas del simulador son
-            referenciales e ilustrativos para facilitar la comparación presupuestaria y no
-            constituyen oferta contractual. La contratación definitiva está sujeta a evaluación,
-            declaración de salud, tabla de factores oficial, valor GES y normativa vigente ante la
-            Superintendencia de Salud. © 2026 Asesoría Independiente en Planes de Salud.
+            Servicio de orientación independiente y 100% gratuito para cotizantes de salud en Chile
+            ({WHATSAPP_DISPLAY}). No constituye el sitio oficial de ninguna Isapre en particular;
+            las marcas mencionadas (Colmena, Banmédica, Consalud, CruzBlanca, Nueva Masvida, Vida
+            Tres y Esencial) pertenecen a sus respectivos titulares. Los escenarios y valores en UF
+            del comparador son referenciales para orientar el presupuesto familiar y no constituyen
+            oferta contractual. La contratación está sujeta a evaluación, declaración de salud,
+            tabla de factores oficial, valor GES y normativa vigente. © 2026 Asesoría Independiente
+            en Planes de Salud.
           </p>
         </div>
       </footer>
