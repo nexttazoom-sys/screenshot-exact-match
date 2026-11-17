@@ -11,24 +11,21 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { Header, Footer } from '@/components/site-shell';
+import { Header, Footer } from "@/components/site-shell";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
+        <h1 className="text-7xl font-bold text-[#12056E]">404</h1>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">Página no encontrada</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+          La página que buscas no existe o fue movida.
         </p>
         <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
+          <Link to="/" className="btn-magenta">
+            Volver al inicio
           </Link>
         </div>
       </div>
@@ -47,10 +44,10 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
+          No pudimos cargar esta página
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+          Ocurrió un inconveniente temporal. Puedes intentar nuevamente o volver al inicio.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -58,15 +55,15 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="btn-magenta !py-2 !px-4 !text-xs"
           >
-            Try again
+            Reintentar
           </button>
           <a
             href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            className="inline-flex items-center justify-center rounded-full border border-input bg-background px-4 py-2 text-xs font-bold text-foreground transition-colors hover:bg-accent"
           >
-            Go home
+            Ir al inicio
           </a>
         </div>
       </div>
@@ -76,21 +73,29 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
-    // Replace these placeholders with the app's name and description when first building the app.
-    // Each content route, / included, must still set its own head(). Never add og:image or
-    // twitter:image here: every page without its own would inherit the root's preview image.
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Cotiza CruzBlanca | Asesoría en planes de salud" },
-      { name: "description", content: "Simula opciones de salud y solicita asesoría para cotizar CruzBlanca." },
-      { property: "og:title", content: "Cotiza CruzBlanca" },
-      { property: "og:description", content: "Asesoría y simulación de planes de salud en Chile." },
+      { title: "Tu Plan de Salud | Asesoría Independiente 100% Gratuita en Chile" },
+      {
+        name: "description",
+        content:
+          "Asesoría independiente 100% gratuita para elegir y optimizar tu plan de salud en Chile. Si sube tu sueldo, sube tu 7%: obtén la mejor cobertura por tu presupuesto. WhatsApp +56 9 4000 9671.",
+      },
+      { property: "og:title", content: "Asesoría Independiente 100% Gratuita en Planes de Salud" },
+      {
+        property: "og:description",
+        content:
+          "Optimiza tu 7% legal de salud y consigue la mejor cobertura posible para ti y tu familia. Contacto directo +56 9 4000 9671.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
-      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap' },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap",
+      },
       {
         rel: "stylesheet",
         href: appCss,
@@ -123,9 +128,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Header />
-      <main><Outlet /></main>
+      <main>
+        <Outlet />
+      </main>
       <Footer />
     </QueryClientProvider>
   );
