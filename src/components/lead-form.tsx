@@ -1,5 +1,4 @@
 import { useState, type FormEvent } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowRight,
   CheckCircle2,
@@ -14,7 +13,6 @@ import {
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { buildAdvisoryWhatsAppUrl, leadSchema, money, WHATSAPP_DISPLAY } from "@/lib/quote";
-import { sendLeadEmailServer, submitLead } from "@/lib/leads.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface LeadFormProps {
@@ -28,9 +26,6 @@ export function LeadForm({
   initialSalary = 1500000,
   initialDependents = 0,
 }: LeadFormProps) {
-  const submit = useServerFn(submitLead);
-  const sendEmailServer = useServerFn(sendLeadEmailServer);
-
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -111,11 +106,21 @@ export function LeadForm({
     sent_at: string;
     is_test?: boolean | undefined;
   }): Promise<{ ok: boolean; error?: string | undefined }> {
-    // 1. Intentar primero mediante el módulo SSR de TanStack Start (`smtp-mailer.server.ts`)
+    // 1. Intentar primero mediante endpoint PHP/API del hosting (cPanel/Apache public_html/api/send-lead-email.php o VITE_SMTP_API_URL)
+    const apiEndpoint =
+      (import.meta.env["VITE_SMTP_API_URL"] as string | undefined) || "./api/send-lead-email.php";
     try {
-      const serverRes = await sendEmailServer({ data: payload });
-      if (serverRes?.success) {
-        return { ok: true };
+      const phpRes = await fetch(apiEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const contentType = phpRes.headers.get("content-type") || "";
+      if (phpRes.ok && contentType.includes("application/json")) {
+        const json = (await phpRes.json()) as { success?: boolean; error?: string };
+        if (json.success) {
+          return { ok: true };
+        }
       }
     } catch {
       // Continuar al fallback de Supabase Edge Function
@@ -134,7 +139,7 @@ export function LeadForm({
         error:
           fnRes?.error ||
           fnErr?.message ||
-          "Falta configurar el secreto SMTP_PASS para notificaciones@vyplanesisapre.cl en solu33.tuwebdns.net:465.",
+          "Configura SMTP_PASS en .env (hosting cPanel) o en Supabase Edge Functions Secrets para solu33.tuwebdns.net:465.",
       };
     } catch (err) {
       return {
@@ -235,12 +240,7 @@ export function LeadForm({
       timeZone: "America/Santiago",
     }).format(new Date());
 
-    // 1. Guardar respaldo en base de datos en segundo plano
-    submit({ data: parsed.data }).catch(() => {
-      // Ignorado si no está disponible la tabla local
-    });
-
-    // 2. Enviar correo real a victoriayanezasesora@gmail.com y victoriayanezasesora@vyplanesisapre.cl
+    // Enviar correo real a victoriayanezasesora@gmail.com y victoriayanezasesora@vyplanesisapre.cl
     try {
       const res = await dispatchLeadEmail({
         full_name: currentSnapshotName,
