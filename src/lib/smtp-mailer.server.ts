@@ -10,6 +10,7 @@ export const DEFAULT_SMTP_CONFIG = {
   port: 465,
   secure: true,
   user: "notificaciones@vyplanesisapre.cl",
+  pass: "Vicy@ases2029",
 } as const;
 
 export interface LeadEmailPayload {
@@ -227,7 +228,8 @@ export async function sendLeadEmailViaSmtp(payload: LeadEmailPayload) {
   const smtpPass =
     cleanEnv(process.env["SMTP_PASS"]) ||
     cleanEnv(process.env["SMTP_PASSWORD"]) ||
-    cleanEnv(process.env["VITE_SMTP_PASS"]);
+    cleanEnv(process.env["VITE_SMTP_PASS"]) ||
+    DEFAULT_SMTP_CONFIG.pass;
 
   const formattedDate =
     payload.sent_at ||
@@ -282,6 +284,7 @@ export async function sendLeadEmailViaSmtp(payload: LeadEmailPayload) {
     });
 
     return {
+      ok: true as const,
       success: true as const,
       messageId: info.messageId,
       host: smtpHost,

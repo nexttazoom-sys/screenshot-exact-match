@@ -28,6 +28,7 @@ export interface LeadFormProps {
 }
 
 interface SmtpApiResponse {
+  ok?: boolean;
   success?: boolean;
   code?: string;
   messageId?: string;
@@ -144,27 +145,32 @@ export function LeadForm({
   }): Promise<{ ok: boolean; messageId?: string | undefined; error?: string | undefined }> {
     let phpEndpointError: string | undefined;
 
-    // 1. Intentar mediante endpoint SMTP del servidor/hosting (Vite middleware o cPanel PHP public_html/api/send-lead-email.php)
-    const apiEndpoint =
-      (import.meta.env["VITE_SMTP_API_URL"] as string | undefined) || "./api/send-lead-email.php";
-    try {
-      const phpRes = await fetch(apiEndpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const contentType = phpRes.headers.get("content-type") || "";
-      if (contentType.includes("application/json")) {
-        const json = (await phpRes.json()) as SmtpApiResponse;
-        if (phpRes.ok && json.success) {
-          return { ok: true, messageId: json.messageId };
+    // 1. Intentar mediante el endpoint PHP del hosting (public_html/send-lead.php o public_html/api/send-lead-email.php)
+    const customApiUrl = (import.meta.env["VITE_SMTP_API_URL"] as string | undefined)?.trim();
+    const phpEndpoints = customApiUrl
+      ? [customApiUrl, "./send-lead.php", "./api/send-lead-email.php"]
+      : ["./send-lead.php", "./api/send-lead-email.php"];
+
+    for (const endpoint of phpEndpoints) {
+      try {
+        const phpRes = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const contentType = phpRes.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const json = (await phpRes.json()) as SmtpApiResponse;
+          if (phpRes.ok && (json.ok || json.success)) {
+            return { ok: true, messageId: json.messageId };
+          }
+          if (json.error && !phpEndpointError) {
+            phpEndpointError = json.error;
+          }
         }
-        if (json.error) {
-          phpEndpointError = json.error;
-        }
+      } catch {
+        // Probar siguiente endpoint disponible
       }
-    } catch {
-      // Si el endpoint local/PHP no está disponible en este hosting, continuar con Supabase Edge Function
     }
 
     // 2. Intentar directamente contra el endpoint estándar de Supabase Edge Function:
@@ -188,7 +194,7 @@ export function LeadForm({
       const edgeContentType = edgeRes.headers.get("content-type") || "";
       if (edgeContentType.includes("application/json")) {
         const edgeJson = (await edgeRes.json()) as SmtpApiResponse;
-        if (edgeRes.ok && edgeJson.success) {
+        if (edgeRes.ok && (edgeJson.ok || edgeJson.success)) {
           return { ok: true, messageId: edgeJson.messageId };
         }
         if (edgeJson.error || edgeJson.message) {
@@ -207,7 +213,7 @@ export function LeadForm({
         },
       );
 
-      if (!fnErr && fnRes?.success) {
+      if (!fnErr && (fnRes?.ok || fnRes?.success)) {
         return { ok: true, messageId: fnRes.messageId };
       }
 

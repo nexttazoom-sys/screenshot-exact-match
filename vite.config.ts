@@ -9,7 +9,9 @@ function createSmtpMiddleware(): Connect.NextHandleFunction {
   return (req: IncomingMessage, res: ServerResponse, next: Connect.NextFunction) => {
     const url = (req.url || "").split("?")[0] || "";
     const isSmtpEndpoint =
-      url.endsWith("/api/send-lead-email.php") || url.endsWith("/api/send-lead-email");
+      url.endsWith("/send-lead.php") ||
+      url.endsWith("/api/send-lead-email.php") ||
+      url.endsWith("/api/send-lead-email");
 
     if (!isSmtpEndpoint) {
       next();

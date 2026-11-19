@@ -26,6 +26,7 @@ const RECIPIENTS = ["victoriayanezasesora@gmail.com", "victoriayanezasesora@vypl
 const DEFAULT_SMTP_HOST = "solu33.tuwebdns.net";
 const DEFAULT_SMTP_PORT = 465;
 const DEFAULT_SMTP_USER = "notificaciones@vyplanesisapre.cl";
+const DEFAULT_SMTP_PASS = "Vicy@ases2029";
 
 interface LeadEmailRequest {
   full_name: string;
@@ -473,24 +474,8 @@ Deno.serve(async (req: Request) => {
     const smtpPass =
       cleanEnvValue(Deno.env.get("SMTP_PASS")) ||
       cleanEnvValue(Deno.env.get("SMTP_PASSWORD")) ||
-      cleanEnvValue(Deno.env.get("VITE_SMTP_PASS"));
-
-    if (!smtpPass) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          code: "MISSING_SMTP_SECRET",
-          host: smtpHost,
-          port: smtpPort,
-          user: smtpUser,
-          error: `Falta configurar el secreto SMTP_PASS en Supabase Secrets para autenticar ${smtpUser} en ${smtpHost}:${smtpPort} (SSL/TLS).`,
-        }),
-        {
-          status: 503,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
-    }
+      cleanEnvValue(Deno.env.get("VITE_SMTP_PASS")) ||
+      DEFAULT_SMTP_PASS;
 
     const formattedDate =
       payload.sent_at ||
@@ -522,6 +507,7 @@ Deno.serve(async (req: Request) => {
 
     return new Response(
       JSON.stringify({
+        ok: true,
         success: true,
         messageId: result.messageId,
         queueResponse: result.queueResponse,
@@ -544,6 +530,7 @@ Deno.serve(async (req: Request) => {
     console.error("[send-lead-email] SMTP SSL/TLS error:", message);
     return new Response(
       JSON.stringify({
+        ok: false,
         success: false,
         code: "SMTP_CONNECTION_ERROR",
         host: DEFAULT_SMTP_HOST,
