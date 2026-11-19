@@ -31,20 +31,32 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
   };
 }
 
+export function getSupabaseEnvConfig(): { url: string; key: string } {
+  const env = (import.meta.env ?? {}) as Record<string, string | undefined>;
+  const nodeEnv =
+    typeof process !== "undefined" && process.env
+      ? (process.env as Record<string, string | undefined>)
+      : {};
+
+  const url = (env["VITE_SUPABASE_URL"] || nodeEnv["SUPABASE_URL"] || FALLBACK_SUPABASE_URL).trim();
+
+  const key = (
+    env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
+    env["VITE_SUPABASE_ANON_KEY"] ||
+    nodeEnv["SUPABASE_PUBLISHABLE_KEY"] ||
+    nodeEnv["SUPABASE_ANON_KEY"] ||
+    FALLBACK_SUPABASE_KEY
+  ).trim();
+
+  return { url, key };
+}
+
 function createSupabaseClient() {
-  const SUPABASE_URL =
-    import.meta.env["VITE_SUPABASE_URL"] ||
-    (typeof process !== "undefined" ? process.env["SUPABASE_URL"] : undefined) ||
-    FALLBACK_SUPABASE_URL;
+  const { url, key } = getSupabaseEnvConfig();
 
-  const SUPABASE_PUBLISHABLE_KEY =
-    import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
-    (typeof process !== "undefined" ? process.env["SUPABASE_PUBLISHABLE_KEY"] : undefined) ||
-    FALLBACK_SUPABASE_KEY;
-
-  return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  return createClient<Database>(url, key, {
     global: {
-      fetch: createSupabaseFetch(SUPABASE_PUBLISHABLE_KEY),
+      fetch: createSupabaseFetch(key),
     },
     auth: {
       storage: brokeredPreviewStorage(),

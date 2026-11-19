@@ -216,11 +216,18 @@ export function renderLeadEmailHtml(payload: LeadEmailPayload, formattedDate: st
 </html>`;
 }
 
+function cleanEnv(value: string | undefined): string {
+  return (value || "").trim().replace(/^["']|["']$/g, "");
+}
+
 export async function sendLeadEmailViaSmtp(payload: LeadEmailPayload) {
-  const smtpHost = process.env["SMTP_HOST"] || DEFAULT_SMTP_CONFIG.host;
-  const smtpPort = Number(process.env["SMTP_PORT"] || String(DEFAULT_SMTP_CONFIG.port));
-  const smtpUser = process.env["SMTP_USER"] || DEFAULT_SMTP_CONFIG.user;
-  const smtpPass = process.env["SMTP_PASS"];
+  const smtpHost = cleanEnv(process.env["SMTP_HOST"]) || DEFAULT_SMTP_CONFIG.host;
+  const smtpPort = Number(cleanEnv(process.env["SMTP_PORT"]) || String(DEFAULT_SMTP_CONFIG.port));
+  const smtpUser = cleanEnv(process.env["SMTP_USER"]) || DEFAULT_SMTP_CONFIG.user;
+  const smtpPass =
+    cleanEnv(process.env["SMTP_PASS"]) ||
+    cleanEnv(process.env["SMTP_PASSWORD"]) ||
+    cleanEnv(process.env["VITE_SMTP_PASS"]);
 
   const formattedDate =
     payload.sent_at ||
@@ -252,28 +259,38 @@ export async function sendLeadEmailViaSmtp(payload: LeadEmailPayload) {
     tls: {
       rejectUnauthorized: false,
     },
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 20000,
   });
 
-  await transporter.verify();
+  try {
+    const subject = `Nueva Solicitud de Asesoría Gratuita - ${payload.full_name}`;
+    const html = renderLeadEmailHtml(payload, formattedDate);
 
-  const subject = `Nueva Solicitud de Asesoría Gratuita - ${payload.full_name}`;
-  const html = renderLeadEmailHtml(payload, formattedDate);
+    const info = await transporter.sendMail({
+      from: `"Victoria Yañez Asesorías" <${smtpUser}>`,
+      to: SMTP_RECIPIENTS.join(", "),
+      replyTo:
+        payload.email &&
+        payload.email !== "No informado" &&
+        payload.email !== "notificaciones@vyplanesisapre.cl"
+          ? payload.email
+          : undefined,
+      subject,
+      html,
+    });
 
-  const info = await transporter.sendMail({
-    from: `"Victoria Yañez Asesorías" <${smtpUser}>`,
-    to: SMTP_RECIPIENTS.join(", "),
-    replyTo: payload.email && payload.email !== "No informado" ? payload.email : undefined,
-    subject,
-    html,
-  });
-
-  return {
-    success: true as const,
-    messageId: info.messageId,
-    host: smtpHost,
-    port: smtpPort,
-    secure: smtpPort === 465,
-    from: `Victoria Yañez Asesorías <${smtpUser}>`,
-    recipients: [...SMTP_RECIPIENTS],
-  };
+    return {
+      success: true as const,
+      messageId: info.messageId,
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpPort === 465,
+      from: `Victoria Yañez Asesorías <${smtpUser}>`,
+      recipients: [...SMTP_RECIPIENTS],
+    };
+  } finally {
+    transporter.close();
+  }
 }

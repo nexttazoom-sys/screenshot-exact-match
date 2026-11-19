@@ -21,6 +21,35 @@ export interface LeadFormProps {
   initialDependents?: number | undefined;
 }
 
+interface SmtpApiResponse {
+  success?: boolean;
+  code?: string;
+  messageId?: string;
+  error?: string;
+  message?: string;
+}
+
+async function extractEdgeFunctionError(fnErr: unknown): Promise<string | undefined> {
+  if (!fnErr || typeof fnErr !== "object") return undefined;
+
+  const errObj = fnErr as { message?: string; context?: unknown };
+  if (errObj.context && typeof (errObj.context as Response).json === "function") {
+    try {
+      const cloned =
+        typeof (errObj.context as Response).clone === "function"
+          ? (errObj.context as Response).clone()
+          : (errObj.context as Response);
+      const body = (await cloned.json()) as SmtpApiResponse;
+      if (body?.error) return body.error;
+      if (body?.message) return body.message;
+    } catch {
+      // Ignorar si la respuesta no es JSON válido
+    }
+  }
+
+  return errObj.message;
+}
+
 export function LeadForm({
   selectedPlan,
   initialSalary = 1500000,
@@ -46,13 +75,13 @@ export function LeadForm({
   );
   const [consent, setConsent] = useState(true);
   const [error, setError] = useState("");
+  const [smtpErrorDetail, setSmtpErrorDetail] = useState("");
   const [busy, setBusy] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [smtpFallback, setSmtpFallback] = useState(false);
   const [submittedName, setSubmittedName] = useState("");
   const [submittedWaUrl, setSubmittedWaUrl] = useState("");
 
-  // Estado para prueba interna del envío SMTP
+  // Estado para prueba de verificación del envío SMTP
   const [testingSmtp, setTestingSmtp] = useState(false);
   const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
 
@@ -105,8 +134,10 @@ export function LeadForm({
     selected_plan?: string | undefined;
     sent_at: string;
     is_test?: boolean | undefined;
-  }): Promise<{ ok: boolean; error?: string | undefined }> {
-    // 1. Intentar primero mediante endpoint PHP/API del hosting (cPanel/Apache public_html/api/send-lead-email.php o VITE_SMTP_API_URL)
+  }): Promise<{ ok: boolean; messageId?: string | undefined; error?: string | undefined }> {
+    let phpEndpointError: string | undefined;
+
+    // 1. Intentar mediante endpoint SMTP del servidor/hosting (Vite middleware o cPanel PHP public_html/api/send-lead-email.php)
     const apiEndpoint =
       (import.meta.env["VITE_SMTP_API_URL"] as string | undefined) || "./api/send-lead-email.php";
     try {
@@ -116,38 +147,49 @@ export function LeadForm({
         body: JSON.stringify(payload),
       });
       const contentType = phpRes.headers.get("content-type") || "";
-      if (phpRes.ok && contentType.includes("application/json")) {
-        const json = (await phpRes.json()) as { success?: boolean; error?: string };
-        if (json.success) {
-          return { ok: true };
+      if (contentType.includes("application/json")) {
+        const json = (await phpRes.json()) as SmtpApiResponse;
+        if (phpRes.ok && json.success) {
+          return { ok: true, messageId: json.messageId };
+        }
+        if (json.error) {
+          phpEndpointError = json.error;
         }
       }
     } catch {
-      // Continuar al fallback de Supabase Edge Function
+      // Si el endpoint local/PHP no está disponible en este hosting, continuar con Supabase Edge Function
     }
 
     // 2. Intentar mediante la Supabase Edge Function `send-lead-email`
     try {
-      const { data: fnRes, error: fnErr } = await supabase.functions.invoke("send-lead-email", {
-        body: payload,
-      });
+      const { data: fnRes, error: fnErr } = await supabase.functions.invoke<SmtpApiResponse>(
+        "send-lead-email",
+        {
+          body: payload,
+        },
+      );
+
       if (!fnErr && fnRes?.success) {
-        return { ok: true };
+        return { ok: true, messageId: fnRes.messageId };
       }
+
+      const detailedEdgeError = fnRes?.error || (await extractEdgeFunctionError(fnErr));
+
       return {
         ok: false,
         error:
-          fnRes?.error ||
-          fnErr?.message ||
-          "Configura SMTP_PASS en .env (hosting cPanel) o en Supabase Edge Functions Secrets para solu33.tuwebdns.net:465.",
+          phpEndpointError ||
+          detailedEdgeError ||
+          "No se pudo completar el envío con el servidor SMTP (solu33.tuwebdns.net:465). Verifica que la Edge Function send-lead-email esté desplegada y tenga configurado el secreto SMTP_PASS.",
       };
     } catch (err) {
       return {
         ok: false,
         error:
-          err instanceof Error
+          phpEndpointError ||
+          (err instanceof Error
             ? err.message
-            : "No fue posible conectar con el servidor SMTP solu33.tuwebdns.net:465.",
+            : "Error de red al conectar con el servicio de correo SMTP (solu33.tuwebdns.net:465)."),
       };
     }
   }
@@ -184,13 +226,13 @@ export function LeadForm({
       if (!res.ok) {
         setTestResult({
           ok: false,
-          message: `Verificación SMTP (solu33.tuwebdns.net:465 SSL/TLS): ${res.error}`,
+          message: `Error en verificación SMTP (solu33.tuwebdns.net:465 SSL/TLS): ${res.error}`,
         });
       } else {
         setTestResult({
           ok: true,
           message:
-            "¡Conexión SSL/TLS a solu33.tuwebdns.net:465 verificada! Correo enviado desde notificaciones@vyplanesisapre.cl hacia victoriayanezasesora@gmail.com y victoriayanezasesora@vyplanesisapre.cl.",
+            "¡Conexión SSL/TLS a solu33.tuwebdns.net:465 verificada con éxito! Correo real enviado desde notificaciones@vyplanesisapre.cl hacia victoriayanezasesora@gmail.com y victoriayanezasesora@vyplanesisapre.cl.",
         });
       }
     } finally {
@@ -230,7 +272,7 @@ export function LeadForm({
 
     setBusy(true);
     setError("");
-    setSmtpFallback(false);
+    setSmtpErrorDetail("");
 
     const currentSnapshotName = fullName.trim();
     const currentSnapshotWaUrl = whatsappSummaryUrl;
@@ -240,7 +282,6 @@ export function LeadForm({
       timeZone: "America/Santiago",
     }).format(new Date());
 
-    // Enviar correo real a victoriayanezasesora@gmail.com y victoriayanezasesora@vyplanesisapre.cl
     try {
       const res = await dispatchLeadEmail({
         full_name: currentSnapshotName,
@@ -261,20 +302,24 @@ export function LeadForm({
         sent_at: sentAt,
       });
 
-      setSubmittedName(currentSnapshotName);
-      setSubmittedWaUrl(currentSnapshotWaUrl);
-
       if (!res.ok) {
-        setSmtpFallback(true);
+        setSmtpErrorDetail(
+          res.error ||
+            "No fue posible enviar el correo mediante solu33.tuwebdns.net:465. Revisa la configuración o contáctanos directo por WhatsApp.",
+        );
         return;
       }
 
-      resetFormFields();
-      setSuccess(true);
-    } catch {
       setSubmittedName(currentSnapshotName);
       setSubmittedWaUrl(currentSnapshotWaUrl);
-      setSmtpFallback(true);
+      resetFormFields();
+      setSuccess(true);
+    } catch (err) {
+      setSmtpErrorDetail(
+        err instanceof Error
+          ? err.message
+          : "Ocurrió un error inesperado al enviar tu solicitud por correo.",
+      );
     } finally {
       setBusy(false);
     }
@@ -295,8 +340,10 @@ export function LeadForm({
         </h3>
         <p className="text-sm text-[#0A033C]/80 mt-2 leading-6">
           Hola <strong>{submittedName}</strong>, hemos enviado tus datos directamente al correo de{" "}
-          <strong>Victoria Yañez Asesorías</strong>. Si deseas atención inmediata, también puedes
-          iniciar el chat de WhatsApp con tu resumen:
+          <strong>Victoria Yañez Asesorías</strong> (
+          <span className="font-semibold">victoriayanezasesora@gmail.com</span> y{" "}
+          <span className="font-semibold">victoriayanezasesora@vyplanesisapre.cl</span>). Si deseas
+          atención inmediata, también puedes iniciar el chat de WhatsApp con tu resumen:
         </p>
         <div className="mt-5 flex flex-col gap-3">
           <a
@@ -315,47 +362,6 @@ export function LeadForm({
             onClick={() => setSuccess(false)}
           >
             Enviar otra consulta
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  if (smtpFallback) {
-    return (
-      <div
-        role="alert"
-        className="bg-[#F6F5FF] border-2 border-[#E91E8C] rounded-2xl p-7 text-center shadow-lg"
-      >
-        <AlertTriangle className="text-[#E91E8C] mx-auto mb-3" size={42} />
-        <span className="inline-block bg-[#12056E] text-white text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full mb-2">
-          Respaldo Directo Activado
-        </span>
-        <h3 className="font-extrabold text-xl text-[#0A033C]">
-          ¡Ya preparamos tu solicitud, {submittedName || "estimado/a"}!
-        </h3>
-        <p className="text-sm text-[#0A033C]/80 mt-2 leading-6">
-          Hubo una demora temporal al conectar con el servidor de correo SMTP, pero tus datos ya
-          están resumidos y listos para que <strong>Victoria Yañez</strong> te atienda de inmediato
-          por WhatsApp sin que tengas que volver a escribirlos:
-        </p>
-        <div className="mt-5 flex flex-col gap-3">
-          <a
-            href={submittedWaUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="btn-magenta w-full justify-center !py-3.5 !text-sm"
-          >
-            <MessageCircle size={18} />
-            Continuar directamente por WhatsApp ({WHATSAPP_DISPLAY})
-          </a>
-          <Button
-            type="button"
-            variant="outline"
-            className="text-xs border-[#12056E]/20 text-[#12056E]"
-            onClick={() => setSmtpFallback(false)}
-          >
-            Volver al formulario
           </Button>
         </div>
       </div>
@@ -551,6 +557,34 @@ export function LeadForm({
         <p role="alert" className="sm:col-span-2 text-destructive text-xs font-semibold">
           {error}
         </p>
+      )}
+
+      {smtpErrorDetail && (
+        <div
+          role="alert"
+          className="sm:col-span-2 rounded-xl border-2 border-[#E91E8C] bg-[#FFF5FA] p-4 text-xs text-[#0A033C] space-y-2.5"
+        >
+          <div className="flex items-start gap-2.5">
+            <AlertTriangle size={18} className="text-[#E91E8C] shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="font-extrabold text-[#12056E]">
+                No se pudo completar el envío por correo electrónico
+              </p>
+              <p className="text-[#0A033C]/85 leading-5">{smtpErrorDetail}</p>
+            </div>
+          </div>
+          <div className="pt-1 flex flex-col sm:flex-row gap-2">
+            <a
+              href={whatsappSummaryUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-magenta justify-center !py-2.5 !px-4 !text-xs"
+            >
+              <MessageCircle size={15} />
+              Enviar resumen directo al WhatsApp ({WHATSAPP_DISPLAY})
+            </a>
+          </div>
+        </div>
       )}
 
       <div className="sm:col-span-2 flex flex-col sm:flex-row gap-3 pt-1">
