@@ -1,5 +1,30 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import nodemailer from "npm:nodemailer@6.9.16";
+declare const Deno: {
+  env: {
+    get(key: string): string | undefined;
+  };
+  serve(handler: (req: Request) => Response | Promise<Response>): void;
+};
+
+interface NodemailerTransporter {
+  verify(): Promise<boolean>;
+  sendMail(options: {
+    from: string;
+    to: string;
+    replyTo?: string | undefined;
+    subject: string;
+    html: string;
+  }): Promise<{ messageId: string }>;
+}
+
+interface NodemailerModule {
+  createTransport(config: {
+    host: string;
+    port: number;
+    secure: boolean;
+    auth: { user: string; pass: string };
+    tls?: { rejectUnauthorized?: boolean };
+  }): NodemailerTransporter;
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,18 +42,18 @@ const DEFAULT_SMTP_USER = "notificaciones@vyplanesisapre.cl";
 interface LeadEmailRequest {
   full_name: string;
   phone: string;
-  email?: string;
-  salary?: number | string;
-  estimated_seven_percent?: number | string;
-  dependents?: string | number;
-  isapre_interest?: string;
-  clinic_commune?: string;
-  preferred_time?: string;
-  main_question?: string;
-  additional_message?: string;
-  selected_plan?: string;
-  sent_at?: string;
-  is_test?: boolean;
+  email?: string | undefined;
+  salary?: number | string | undefined;
+  estimated_seven_percent?: number | string | undefined;
+  dependents?: string | number | undefined;
+  isapre_interest?: string | undefined;
+  clinic_commune?: string | undefined;
+  preferred_time?: string | undefined;
+  main_question?: string | undefined;
+  additional_message?: string | undefined;
+  selected_plan?: string | undefined;
+  sent_at?: string | undefined;
+  is_test?: boolean | undefined;
 }
 
 function escapeHtml(value: unknown): string {
@@ -218,7 +243,15 @@ function buildHtmlEmail(payload: LeadEmailRequest, formattedDate: string): strin
 </html>`;
 }
 
-serve(async (req: Request) => {
+async function loadNodemailer(): Promise<NodemailerModule> {
+  const pkg = "npm:nodemailer@6.9.16";
+  const mod = (await import(/* @vite-ignore */ pkg)) as {
+    default?: NodemailerModule;
+  } & NodemailerModule;
+  return mod.default ?? mod;
+}
+
+Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -268,6 +301,8 @@ serve(async (req: Request) => {
         timeStyle: "medium",
         timeZone: "America/Santiago",
       }).format(new Date());
+
+    const nodemailer = await loadNodemailer();
 
     // Conexión SMTP con SSL/TLS implícito obligatorio en puerto 465
     const transporter = nodemailer.createTransport({
