@@ -8,6 +8,7 @@ import {
 } from "@/lib/quote";
 
 export interface ClinicCommuneSelectProps {
+  id?: string | undefined;
   value: string;
   onChange: (nextValue: string) => void;
   name?: string | undefined;
@@ -15,6 +16,7 @@ export interface ClinicCommuneSelectProps {
 }
 
 export function ClinicCommuneSelect({
+  id,
   value,
   onChange,
   name = "clinic_commune",
@@ -114,22 +116,23 @@ export function ClinicCommuneSelect({
 
       <div className="relative">
         <button
+          id={id}
           type="button"
           role="combobox"
           aria-expanded={open}
           aria-controls={listboxId}
           aria-haspopup="listbox"
           onClick={() => setOpen((prev) => !prev)}
-          className="field w-full flex items-center justify-between gap-2 text-left cursor-pointer pr-9"
+          className="field !h-auto min-h-[46px] py-2.5 w-full flex items-center justify-between gap-2 text-left cursor-pointer pr-9 hover:border-[#12056E]/45 focus-visible:outline-none focus-visible:border-[#E91E8C]"
         >
           <span className="flex items-center gap-2 min-w-0 flex-1">
             <Building2
               size={15}
-              className={displayLabel ? "text-[#E91E8C] shrink-0" : "text-[#12056E]/50 shrink-0"}
+              className={displayLabel ? "text-[#E91E8C] shrink-0" : "text-[#12056E] shrink-0"}
             />
             <span
-              className={`truncate text-xs sm:text-sm ${
-                displayLabel ? "text-[#0A033C] font-semibold" : "text-[#0A033C]/50 font-normal"
+              className={`break-words text-xs sm:text-sm leading-snug ${
+                displayLabel ? "text-[#0A033C] font-bold" : "text-[#0A033C]/65 font-medium"
               }`}
             >
               {displayLabel || placeholder}
@@ -162,7 +165,7 @@ export function ClinicCommuneSelect({
           id={listboxId}
           role="listbox"
           aria-label="Clínicas y comunas disponibles"
-          className="absolute left-0 right-0 z-50 mt-1.5 rounded-2xl border-2 border-[#12056E]/20 bg-white shadow-2xl overflow-hidden"
+          className="absolute left-0 right-0 z-[110] mt-1.5 rounded-2xl border-2 border-[#12056E]/25 bg-white shadow-2xl overflow-hidden"
         >
           <div className="p-2.5 bg-[#F6F5FF] border-b border-[#12056E]/10">
             <div className="relative flex items-center">

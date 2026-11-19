@@ -549,9 +549,10 @@
 }
 
 .field {
+  min-height: 46px;
   height: 46px;
-  border: 1.5px solid rgba(18, 5, 110, 0.18);
-  background: #ffffff;
+  border: 1.5px solid rgba(18, 5, 110, 0.24);
+  background-color: #ffffff;
   color: #0a033c;
   border-radius: 10px;
   padding: 0 13px;
@@ -561,6 +562,16 @@
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease;
+}
+
+.field option {
+  background-color: #ffffff;
+  color: #0a033c;
+  font-weight: 600;
+}
+
+.field:hover {
+  border-color: rgba(18, 5, 110, 0.42);
 }
 
 .field:focus {
@@ -579,7 +590,7 @@
   color: #ffffff;
   padding: 76px 0;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .section-soft {
@@ -881,10 +892,13 @@
     padding: 12px 16px;
     font-size: 12px;
   }
+
+  .footer {
+    padding-bottom: 84px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {

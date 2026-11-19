@@ -515,17 +515,20 @@ export function LeadForm({
         </select>
       </label>
 
-      <div className="field-label">
-        <span>Clínica de preferencia / Comuna</span>
+      <div className="field-label sm:col-span-2">
+        <label htmlFor="clinic-commune-trigger" className="text-xs font-bold text-[#0A033C]">
+          Clínica de preferencia / Comuna
+        </label>
         <ClinicCommuneSelect
+          id="clinic-commune-trigger"
           name="clinic_commune"
           value={clinicCommune}
           onChange={setClinicCommune}
-          placeholder="Buscar comuna o clínica (ej: Copiapó, Las Condes, Indisa...)"
+          placeholder="Buscar comuna o clínica (ej: Copiapó, Las Condes, Indisa, Antofagasta...)"
         />
       </div>
 
-      <label className="field-label">
+      <label className="field-label sm:col-span-2">
         Horario preferido de contacto
         <select
           className="field"
