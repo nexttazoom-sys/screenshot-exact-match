@@ -1,0 +1,32 @@
+{
+  "name": "Victoria Yañez Asesorías | Planes de Salud e Isapres",
+  "short_name": "Victoria Yañez",
+  "description": "Asesoría independiente 100% gratuita para elegir y optimizar tu plan de salud en Chile. WhatsApp +56 9 4000 9671.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0A033C",
+  "theme_color": "#12056E",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "./favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "./apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

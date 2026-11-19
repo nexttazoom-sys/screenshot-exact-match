@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+  <defs>
+    <linearGradient id="vyBg" x1="6" y1="4" x2="58" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1B0994" />
+      <stop offset="55%" stop-color="#12056E" />
+      <stop offset="100%" stop-color="#0A033C" />
+    </linearGradient>
+    <linearGradient id="vyMagenta" x1="8" y1="6" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F01E8E" />
+      <stop offset="100%" stop-color="#E91E8C" />
+    </linearGradient>
+  </defs>
+
+  <!-- Escudo principal de alto contraste para 16x16, 32x32 y 180x180 -->
+  <path
+    d="M32 3.5L56 12V29.5C56 44.8 45.8 56.4 32 60.5C18.2 56.4 8 44.8 8 29.5V12L32 3.5Z"
+    fill="url(#vyBg)"
+    stroke="url(#vyMagenta)"
+    stroke-width="4"
+    stroke-linejoin="round"
+  />
+
+  <!-- Cruz de salud superior en magenta vibrante -->
+  <path
+    d="M32 10.5V18.5M28 14.5H36"
+    stroke="#F01E8E"
+    stroke-width="3.6"
+    stroke-linecap="round"
+  />
+
+  <!-- Monograma VY en blanco puro de alta legibilidad -->
+  <path
+    d="M16.5 23.5L23 40.5L29.5 23.5"
+    stroke="#FFFFFF"
+    stroke-width="4.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M34.5 23.5L41 32.5L47.5 23.5M41 32.5V40.5"
+    stroke="#FFFFFF"
+    stroke-width="4.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Trazo curvo inferior de cuidado y protección en magenta -->
+  <path
+    d="M18 45.5C22.5 50.2 27.2 52.5 32 53.5C36.8 52.5 41.5 50.2 46 45.5"
+    stroke="url(#vyMagenta)"
+    stroke-width="3.6"
+    stroke-linecap="round"
+  />
+</svg>
