@@ -1,18 +1,5 @@
 import { useState } from "react";
-import {
-  Building2,
-  HeartPulse,
-  ShieldPlus,
-  TrendingUp,
-  Users,
-  MessageCircle,
-  ArrowRight,
-  CheckCircle2,
-  SlidersHorizontal,
-  Sparkles,
-  Scale,
-  Check,
-} from "lucide-react";
+import { MessageCircle, ArrowRight, SlidersHorizontal, Sparkles } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { buildAdvisoryWhatsAppUrl, buildWhatsAppUrl, money, WHATSAPP_DISPLAY } from "@/lib/quote";
 
@@ -26,69 +13,50 @@ export interface ComparablePlan {
   hospitalPct: number;
   outpatientPct: number;
   ufCost: number;
-  protectionLevel:
-    "Esencial Hogar" | "Equilibrio Familiar" | "Protección Total" | "Libre Elección Plus";
   idealFor: string;
-  highlights: string[];
 }
 
 const COMPARABLE_PLANS: ComparablePlan[] = [
   {
-    id: "red-hogar-7",
-    name: "Plan Red Preferente 7%",
+    id: "plan-base-7",
+    name: "Plan Optimiza tu 7%",
     category: "7-exacto",
     categoryLabel: "Ajustado a tu 7%",
-    networkType: "Preferente inteligente",
-    clinics: "RedSalud, Dávila, Bupa, Integramédica y clínicas regionales",
-    hospitalPct: 80,
-    outpatientPct: 70,
-    ufCost: 2.35,
-    protectionLevel: "Esencial Hogar",
-    idealFor: "Quienes subieron de sueldo y buscan mejorar cobertura sin pagar adicional.",
-    highlights: [
-      "Se financia íntegramente con un 7% desde $1.350.000 aprox.",
-      "Copagos conocidos en consultas y exámenes frecuentes",
-      "Urgencia y hospitalización preferente en red nacional",
-    ],
-  },
-  {
-    id: "familia-protegida",
-    name: "Plan Familia & Cargas",
-    category: "familiar",
-    categoryLabel: "Familiar / Cargas",
-    networkType: "Preferente familiar ampliada",
-    clinics: "Santa María, Indisa, UC Christus, Sanatorio Alemán, Ciudad del Mar",
+    networkType: "Red Preferente Regional y RM",
+    clinics: "Clínica Dávila, Hospital Clínico Indisa, Andes Salud El Loa, RedSalud Iquique",
     hospitalPct: 90,
-    outpatientPct: 75,
-    ufCost: 3.1,
-    protectionLevel: "Equilibrio Familiar",
-    idealFor: "Hogares con pareja o hijos que priorizan pediatría, urgencias y hospitalización.",
-    highlights: [
-      "Excelente relación factor familiar vs. bonificación pediátrica",
-      "Descuentos en farmacias y orientación médica pediátrica 24/7",
-      "Cobertura dental preventiva para cargas familiares",
-    ],
+    outpatientPct: 70,
+    ufCost: 1.75,
+    idealFor:
+      "Cotizantes desde $1.000.000 de renta que buscan aprovechar su 7% sin pagar diferencia adicional.",
   },
   {
-    id: "alta-cobertura",
+    id: "plan-quirurgico-plus",
+    name: "Plan Cobertura Quirúrgica Preferente",
+    category: "familiar",
+    categoryLabel: "Familiar y Cirugías",
+    networkType: "Red Preferente Hospitalaria",
+    clinics: "Santa María, Clínica Dávila, Isamédica, Ciudad del Mar, Vida Integral, UC Católica",
+    hospitalPct: 100,
+    outpatientPct: 80,
+    ufCost: 2.55,
+    idealFor:
+      "Hogares que priorizan respaldo hospitalario y quirúrgico con alta cobertura en clínicas líderes.",
+  },
+  {
+    id: "plan-alta-clinica",
     name: "Plan Clínica Preferente 90/80",
     category: "alta-clinica",
     categoryLabel: "Alta Cobertura Clínica",
     networkType: "Preferente alta complejidad",
-    clinics: "Clínica Alemana, UC Christus, Los Andes, Las Condes y red nacional",
+    clinics: "Clínica Alemana, UC Católica, Santa María, Las Condes y red nacional",
     hospitalPct: 90,
     outpatientPct: 80,
-    ufCost: 3.75,
-    protectionLevel: "Protección Total",
+    ufCost: 3.45,
     idealFor: "Cotizantes que desean máxima tranquilidad ante cirugías y alta complejidad.",
-    highlights: [
-      "Topes hospitalarios altos en clínicas de primer nivel",
-      "Bonificación preferente en imágenes, laboratorio y kinesiología",
-      "Respaldo integral GES + cobertura catastrófica CAEC",
-    ],
   },
   {
-    id: "libre-eleccion-flex",
+    id: "plan-libre-eleccion",
     name: "Plan Libre Elección Flexible",
     category: "libre-eleccion",
     categoryLabel: "Libre Elección",
@@ -96,21 +64,17 @@ const COMPARABLE_PLANS: ComparablePlan[] = [
     clinics: "Cualquier clínica, centro médico o médico particular del país",
     hospitalPct: 90,
     outpatientPct: 80,
-    ufCost: 4.15,
-    protectionLevel: "Libre Elección Plus",
-    idealFor: "Familias que se atienden con médicos particulares en distintas clínicas.",
-    highlights: [
-      "Libertad para elegir especialista sin depender de un solo prestador",
-      "Reembolso web rápido de boletas y consultas particulares",
-      "Amplia cobertura en Santiago y todas las regiones",
-    ],
+    ufCost: 3.95,
+    idealFor: "Familias que se atienden con médicos particulares en distintas clínicas de Chile.",
   },
 ];
 
 export interface IsapreInfo {
   name: string;
+  code: string;
   badge: string;
-  group: "7-ajuste" | "regiones" | "alta-complejidad";
+  featured?: boolean | undefined;
+  group: "destacadas" | "7-ajuste" | "regiones" | "alta-complejidad";
   summary: string;
   clinics: string;
   coverageStrength: string;
@@ -119,7 +83,51 @@ export interface IsapreInfo {
 
 const ISAPRES_DATA: IsapreInfo[] = [
   {
+    name: "Banmédica",
+    code: "BA",
+    badge: "Red Preferente Consolidada",
+    featured: true,
+    group: "destacadas",
+    summary:
+      "Destaca por su equilibrio entre valor del plan y acceso preferente a una red propia de clínicas líderes para toda la familia.",
+    clinics:
+      "Santa María, Clínica Dávila, Isamédica, Ciudad del Mar, Vida Integral, UC Católica, Hospital Clínico Indisa.",
+    coverageStrength: "Bonificaciones de hasta 90%–100% hospitalario dentro de su red preferente.",
+    familyBenefit:
+      "Excelente alternativa para intervención quirúrgica sin tope en prótesis, órtesis y elementos de osteosíntesis (manguito rotador, columna, disco, rodilla) con copago cero.",
+  },
+  {
+    name: "CruzBlanca",
+    code: "CR",
+    badge: "Red Integrada y Cobertura Norte / Nacional",
+    featured: true,
+    group: "destacadas",
+    summary:
+      "Integra cobertura ambulatoria y hospitalaria con convenios preferentes de alto porcentaje en regiones y Santiago, facilitando exámenes y hospitalización.",
+    clinics:
+      "100% Andes Salud El Loa, RedSalud Iquique, Clínica Bupa Santiago, Bupa Reñaca, Bupa Antofagasta y red Integramédica.",
+    coverageStrength:
+      "Fuerte bonificación hospitalaria y ambulatoria en clínicas regionales preferentes y centros médicos.",
+    familyBenefit:
+      "Programas de bienestar familiar, orientación médica continua y excelente cobertura en zona norte y central.",
+  },
+  {
+    name: "Nueva Masvida",
+    code: "NU",
+    badge: "Fuerte Presencia Regional",
+    featured: true,
+    group: "destacadas",
+    summary:
+      "Ofrece planes versátiles con excelente recepción en clínicas regionales y prestadores preferentes de la Región Metropolitana.",
+    clinics:
+      "Clínica Indisa, Bicentenario, Universitaria de Concepción, Puerto Montt, Antofagasta y red regional preferente.",
+    coverageStrength: "Planes preferentes y libre elección con tarifas competitivas en UF.",
+    familyBenefit:
+      "Alternativa muy valorada por familias en regiones y cotizantes que buscan optimizar su 7% al cambiar de plan.",
+  },
+  {
     name: "Colmena",
+    code: "CO",
     badge: "Fortaleza en Libre Elección",
     group: "alta-complejidad",
     summary:
@@ -131,60 +139,31 @@ const ISAPRES_DATA: IsapreInfo[] = [
       "Programas preventivos familiares, reembolso ágil en app y descuentos en farmacias.",
   },
   {
-    name: "Banmédica",
-    badge: "Red Preferente Consolidada",
+    name: "Consalud",
+    code: "CS",
+    badge: "Cobertura Nacional y Digital",
     group: "7-ajuste",
     summary:
-      "Destaca por su equilibrio entre valor del plan y acceso preferente a una red propia de clínicas líderes para toda la familia.",
-    clinics: "Clínica Santa María, Dávila, Vespucio, Biobío, Ciudad del Mar y VidaIntegra.",
-    coverageStrength: "Bonificaciones de hasta 90%–100% hospitalario dentro de su red preferente.",
-    familyBenefit: "Excelente alternativa para grupos familiares que buscan copagos predecibles.",
-  },
-  {
-    name: "Consalud",
-    badge: "Cobertura Nacional y Digital",
-    group: "regiones",
-    summary:
-      "Ideal para optimizar el 7% legal con planes competitivos y acceso directo a la red médica más extensa del país.",
+      "Ideal para optimizar el 7% legal con planes competitivos y acceso directo a una extensa red médica en todo el país.",
     clinics: "Clínicas y Centros Médicos RedSalud en Santiago y de Arica a Magallanes.",
-    coverageStrength: "Planes muy eficientes para rentas medias y jóvenes profesionales.",
+    coverageStrength: "Planes muy eficientes para rentas desde $1.000.000 y grupos familiares.",
     familyBenefit: "Bonificación instantánea en farmacias, telemedicina y gestión 100% online.",
   },
   {
-    name: "CruzBlanca",
-    badge: "Red Integrada Bupa",
-    group: "7-ajuste",
-    summary:
-      "Integra cobertura ambulatoria y hospitalaria bajo el respaldo de la red Bupa, facilitando exámenes y consultas en un mismo ecosistema.",
-    clinics: "Clínica Bupa Santiago, Bupa Reñaca, Bupa Antofagasta y red Integramédica.",
-    coverageStrength: "Fuerte bonificación ambulatoria en centros médicos y urgencias en red.",
-    familyBenefit: "Programas de bienestar familiar, orientación médica telefónica y dental.",
-  },
-  {
-    name: "Nueva Masvida",
-    badge: "Fuerte Presencia Regional",
-    group: "regiones",
-    summary:
-      "Ofrece planes versátiles con excelente recepción en clínicas regionales y prestadores preferentes de la Región Metropolitana.",
-    clinics:
-      "Clínica Indisa, Bicentenario, Universitaria de Concepción, Puerto Montt y Antofagasta.",
-    coverageStrength: "Planes preferentes y libre elección con tarifas competitivas en UF.",
-    familyBenefit:
-      "Alternativa muy valorada por familias en regiones y cotizantes que cambian de plan.",
-  },
-  {
     name: "Vida Tres",
+    code: "VT",
     badge: "Alta Protección Clínica",
     group: "alta-complejidad",
     summary:
       "Orientada a quienes priorizan acceso a clínicas de primer nivel y mayores topes anuales en hospitalización y cirugías.",
-    clinics: "Clínica Alemana, Las Condes, Santa María, UC Christus y Clínica Ciudad del Mar.",
+    clinics: "Clínica Alemana, Las Condes, Santa María, UC Católica y Clínica Ciudad del Mar.",
     coverageStrength: "Amplio respaldo en prestaciones de alto costo y libre elección.",
     familyBenefit:
       "Atención preferencial, convenios de maternidad y protección hospitalaria superior.",
   },
   {
     name: "Esencial",
+    code: "ES",
     badge: "Respaldo Grupo Alemana",
     group: "alta-complejidad",
     summary:
@@ -196,54 +175,16 @@ const ISAPRES_DATA: IsapreInfo[] = [
   },
 ];
 
-const corePillars = [
-  {
-    icon: TrendingUp,
-    title: "Tu 7% convertido en bienestar real",
-    text: "Cuando mejora tu sueldo, tu cotización sube sola. Revisamos gratis que ese esfuerzo mensual proteja mejor a tu familia.",
-    tag: "Cuidamos el presupuesto de tu hogar",
-    accent: true,
-  },
-  {
-    icon: Building2,
-    title: "La clínica donde confías atenderte",
-    text: "Buscamos planes según los pediatras, especialistas y clínicas que te quedan cerca en Santiago o tu región.",
-    tag: "Red clínica a tu medida",
-    accent: false,
-  },
-  {
-    icon: Users,
-    title: "Protección para cada etapa familiar",
-    text: "Ya sea para ti, en pareja o con hijos, comparamos todas las Isapres con calidez, transparencia y cero costo.",
-    tag: "Asesoría humana y sin letra chica",
-    accent: false,
-  },
-];
-
 export function PlanComparator() {
   const [filter, setFilter] = useState<string>("todos");
-  const [monthlySalary, setMonthlySalary] = useState<number>(1700000);
-  const [comparedIds, setComparedIds] = useState<string[]>(["red-hogar-7", "familia-protegida"]);
+  const [monthlySalary, setMonthlySalary] = useState<number>(1500000);
 
   const ufReference = 40000;
-  const sevenPercentCLP = Math.round(monthlySalary * 0.07);
+  const safeSalary = Math.max(1000000, monthlySalary);
+  const sevenPercentCLP = Math.round(safeSalary * 0.07);
 
   const visiblePlans =
     filter === "todos" ? COMPARABLE_PLANS : COMPARABLE_PLANS.filter((p) => p.category === filter);
-
-  const toggleCompare = (id: string) => {
-    setComparedIds((prev) =>
-      prev.includes(id)
-        ? prev.length > 1
-          ? prev.filter((item) => item !== id)
-          : prev
-        : prev.length < 3
-          ? [...prev, id]
-          : [prev[1] ?? id, prev[2] ?? id, id],
-    );
-  };
-
-  const comparedPlans = COMPARABLE_PLANS.filter((p) => comparedIds.includes(p.id));
 
   return (
     <section id="comparador" className="section bg-[#F6F5FF]">
@@ -258,28 +199,31 @@ export function PlanComparator() {
               <span className="text-[#E91E8C]">necesidad familiar</span>
             </h2>
             <p className="section-subtitle max-w-2xl">
-              Ajusta tu renta aproximada, filtra por tu prioridad y selecciona hasta 3 opciones para
-              contrastar cobertura clínica, bonificaciones y ajuste a tu 7%.
+              Ajusta tu renta imponible aproximada (desde $1.000.000) y filtra por tu prioridad para
+              revisar opciones de cobertura clínica, bonificaciones y calce con tu 7%.
             </p>
           </div>
 
-          {/* Control rápido de renta para ver calce con el 7% */}
-          <div className="bg-white border-2 border-[#12056E]/15 rounded-2xl p-4 shadow-sm min-w-[270px]">
+          {/* Control rápido de renta con mínimo $1.000.000 */}
+          <div className="bg-white border-2 border-[#12056E]/15 rounded-2xl p-4 shadow-sm min-w-[280px]">
             <label className="text-[11px] font-extrabold uppercase tracking-wider text-[#12056E] block">
-              Tu renta imponible aprox.:{" "}
-              <span className="text-[#E91E8C]">{money(monthlySalary)}</span>
+              Tu renta imponible aprox.: <span className="text-[#E91E8C]">{money(safeSalary)}</span>
             </label>
             <input
               type="range"
-              min={800000}
-              max={4000000}
+              min={1000000}
+              max={4500000}
               step={100000}
-              value={monthlySalary}
-              onChange={(e) => setMonthlySalary(Number(e.target.value))}
+              value={safeSalary}
+              onChange={(e) => setMonthlySalary(Math.max(1000000, Number(e.target.value)))}
               className="w-full accent-[#E91E8C] mt-2 cursor-pointer"
-              aria-label="Renta imponible aproximada"
+              aria-label="Renta imponible aproximada desde un millón de pesos"
             />
-            <div className="flex justify-between items-center text-xs mt-1">
+            <div className="flex justify-between items-center text-[10px] text-[#0A033C]/65 mt-0.5">
+              <span>Mín: $1.000.000</span>
+              <span>Máx: $4.500.000+</span>
+            </div>
+            <div className="flex justify-between items-center text-xs mt-1.5 pt-1.5 border-t border-border">
               <span className="text-[#0A033C]/70">Tu 7% mensual estimado:</span>
               <strong className="text-[#12056E] bg-[#F6F5FF] px-2.5 py-0.5 rounded-full">
                 {money(sevenPercentCLP)}/mes
@@ -293,7 +237,7 @@ export function PlanComparator() {
           {[
             { id: "todos", label: "Todas las opciones" },
             { id: "7-exacto", label: "Ajustado a tu 7%" },
-            { id: "familiar", label: "Familiar y Cargas" },
+            { id: "familiar", label: "Familiar y Cirugías" },
             { id: "alta-clinica", label: "Alta Cobertura Clínica" },
             { id: "libre-eleccion", label: "Libre Elección" },
           ].map((tab) => (
@@ -308,37 +252,19 @@ export function PlanComparator() {
           ))}
         </div>
 
-        {/* Tarjetas de opciones seleccionables */}
+        {/* Tarjetas de opciones */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
           {visiblePlans.map((plan) => {
             const estPriceCLP = Math.round(plan.ufCost * ufReference);
             const diffCLP = sevenPercentCLP - estPriceCLP;
-            const isSelected = comparedIds.includes(plan.id);
 
             return (
-              <article
-                key={plan.id}
-                className={`benefit-card flex flex-col justify-between !p-5 ${
-                  isSelected ? "!border-2 !border-[#E91E8C] ring-4 ring-[#E91E8C]/10" : ""
-                }`}
-              >
+              <article key={plan.id} className="benefit-card flex flex-col justify-between !p-5">
                 <div>
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#12056E] text-white">
                       {plan.categoryLabel}
                     </span>
-                    <button
-                      type="button"
-                      onClick={() => toggleCompare(plan.id)}
-                      className={`text-[11px] font-extrabold px-2.5 py-1 rounded-full border transition-colors inline-flex items-center gap-1 ${
-                        isSelected
-                          ? "bg-[#E91E8C] text-white border-[#E91E8C]"
-                          : "bg-white text-[#12056E] border-[#12056E]/25 hover:border-[#E91E8C]"
-                      }`}
-                    >
-                      {isSelected ? <Check size={12} /> : <Scale size={12} />}
-                      {isSelected ? "Comparando" : "Comparar"}
-                    </button>
                   </div>
 
                   <h3 className="font-extrabold text-base text-[#12056E] mt-3">{plan.name}</h3>
@@ -393,15 +319,15 @@ export function PlanComparator() {
                   </div>
 
                   <p className="text-[11px] text-[#0A033C]/80 mt-3 leading-5">
-                    <strong className="text-[#12056E]">Clínicas tipo:</strong> {plan.clinics}
+                    <strong className="text-[#12056E]">Clínicas destacadas:</strong> {plan.clinics}
                   </p>
                 </div>
 
                 <a
                   href={buildAdvisoryWhatsAppUrl({
-                    salary: monthlySalary,
+                    salary: safeSalary,
                     selected_plan: `${plan.name} (${plan.ufCost} UF ref.)`,
-                    main_question: `Me interesó el perfil "${plan.name}" en el comparador y quiero ver opciones reales en Isapres con mi 7%`,
+                    main_question: `Me interesó "${plan.name}" con mi renta aprox. de ${money(safeSalary)} y quiero ver opciones reales en Isapres`,
                   })}
                   target="_blank"
                   rel="noreferrer"
@@ -414,106 +340,6 @@ export function PlanComparator() {
             );
           })}
         </div>
-
-        {/* Tabla comparativa lado a lado */}
-        <div className="mt-8 bg-white rounded-3xl border-2 border-[#12056E]/12 p-5 sm:p-7 shadow-lg">
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-            <div>
-              <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#E91E8C]">
-                VISTA LADO A LADO ({comparedPlans.length} SELECCIONADOS)
-              </span>
-              <h3 className="text-lg sm:text-xl font-extrabold text-[#12056E]">
-                Comparativa rápida para tu presupuesto de {money(sevenPercentCLP)}/mes (7%)
-              </h3>
-            </div>
-            <span className="text-xs text-[#0A033C]/70">
-              Haz clic en <strong>“Comparar”</strong> en las tarjetas superiores para cambiar las
-              columnas
-            </span>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[600px]">
-              <thead>
-                <tr className="border-b-2 border-[#12056E]/15">
-                  <th className="py-3 pr-4 text-xs font-extrabold uppercase tracking-wider text-[#0A033C]/70 w-1/4">
-                    Criterio clave
-                  </th>
-                  {comparedPlans.map((p) => (
-                    <th key={p.id} className="py-3 px-4 text-sm font-extrabold text-[#12056E]">
-                      <span className="inline-block text-[10px] text-[#E91E8C] uppercase tracking-wider block">
-                        {p.protectionLevel}
-                      </span>
-                      {p.name}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border text-xs">
-                <tr>
-                  <td className="py-3.5 pr-4 font-bold text-[#0A033C]">Tipo de red y clínicas</td>
-                  {comparedPlans.map((p) => (
-                    <td key={p.id} className="py-3.5 px-4 text-[#0A033C]/85 leading-5">
-                      <strong className="text-[#12056E] block">{p.networkType}</strong>
-                      {p.clinics}
-                    </td>
-                  ))}
-                </tr>
-                <tr>
-                  <td className="py-3.5 pr-4 font-bold text-[#0A033C]">
-                    Bonificación Hospitalaria / Ambulatoria
-                  </td>
-                  {comparedPlans.map((p) => (
-                    <td key={p.id} className="py-3.5 px-4">
-                      <span className="inline-flex items-center gap-1.5 font-extrabold text-[#12056E] bg-[#F6F5FF] px-3 py-1 rounded-full">
-                        {p.hospitalPct}% Hosp. · {p.outpatientPct}% Amb.
-                      </span>
-                    </td>
-                  ))}
-                </tr>
-                <tr>
-                  <td className="py-3.5 pr-4 font-bold text-[#0A033C]">
-                    Valor referencial frente a tu 7%
-                  </td>
-                  {comparedPlans.map((p) => {
-                    const price = Math.round(p.ufCost * ufReference);
-                    const diff = sevenPercentCLP - price;
-                    return (
-                      <td key={p.id} className="py-3.5 px-4">
-                        <strong className="text-sm text-[#12056E]">{p.ufCost.toFixed(2)} UF</strong>{" "}
-                        <span className="text-[#0A033C]/70">(~{money(price)}/mes)</span>
-                        <span
-                          className={`block text-[11px] font-bold mt-0.5 ${
-                            diff >= 0 ? "text-[#12056E]" : "text-[#E91E8C]"
-                          }`}
-                        >
-                          {diff >= 0
-                            ? `Se cubre con tu 7% (sobra ~${money(diff)})`
-                            : `Diferencia sobre tu 7%: ~${money(Math.abs(diff))}`}
-                        </span>
-                      </td>
-                    );
-                  })}
-                </tr>
-                <tr>
-                  <td className="py-3.5 pr-4 font-bold text-[#0A033C]">Ventajas destacadas</td>
-                  {comparedPlans.map((p) => (
-                    <td key={p.id} className="py-3.5 px-4">
-                      <ul className="space-y-1.5">
-                        {p.highlights.map((h) => (
-                          <li key={h} className="flex items-start gap-1.5 text-[#0A033C]/85">
-                            <CheckCircle2 size={13} className="text-[#E91E8C] shrink-0 mt-0.5" />
-                            <span>{h}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </td>
-                  ))}
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
       </div>
     </section>
   );
@@ -525,7 +351,9 @@ export function IsapresDirectory() {
   const filteredIsapres =
     activeGroup === "todas"
       ? ISAPRES_DATA
-      : ISAPRES_DATA.filter((item) => item.group === activeGroup);
+      : activeGroup === "destacadas"
+        ? ISAPRES_DATA.filter((item) => item.featured)
+        : ISAPRES_DATA.filter((item) => item.group === activeGroup);
 
   return (
     <section id="isapres" className="section bg-white">
@@ -538,17 +366,17 @@ export function IsapresDirectory() {
             Beneficios y fortalezas de cada <span className="text-[#E91E8C]">Isapre</span>
           </h2>
           <p className="section-subtitle">
-            Como asesoría independiente, comparamos todas las instituciones del mercado para que
-            conozcas de un vistazo qué ofrece cada una para tu hogar y tu presupuesto.
+            Como asesoría independiente, comparamos las instituciones del mercado destacando las
+            mejores redes clínicas, coberturas quirúrgicas y beneficios regionales para tu familia.
           </p>
         </div>
 
         <div className="flex flex-wrap justify-center gap-2.5 mt-7 mb-9">
           {[
             { id: "todas", label: "Todas las Isapres (7)" },
-            { id: "7-ajuste", label: "Mejor calce con tu 7%" },
-            { id: "regiones", label: "Fuerte red en Regiones y RM" },
-            { id: "alta-complejidad", label: "Clínicas de Alta Complejidad y Libre Elección" },
+            { id: "destacadas", label: "★ Destacadas: Banmédica · CruzBlanca · Nueva Masvida" },
+            { id: "alta-complejidad", label: "Alta Complejidad y Libre Elección" },
+            { id: "7-ajuste", label: "Ajuste al 7%" },
           ].map((g) => (
             <button
               key={g.id}
@@ -564,28 +392,28 @@ export function IsapresDirectory() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredIsapres.map((isa) => {
             const waUrl = buildWhatsAppUrl(
-              `Hola, quiero recibir asesoría gratuita para comparar planes de Isapre ${isa.name} según mi 7% y grupo familiar.`,
+              `Hola, quiero recibir asesoría gratuita para cotizar planes de Isapre ${isa.name} según mi 7% y grupo familiar.`,
             );
 
             return (
               <article
                 key={isa.name}
-                className="benefit-card flex flex-col justify-between hover:border-[#E91E8C]"
+                className={`benefit-card flex flex-col justify-between hover:border-[#E91E8C] ${
+                  isa.featured ? "border-[#E91E8C]/45 shadow-md" : ""
+                }`}
               >
                 <div>
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <span className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#12056E] to-[#1B0994] text-white font-extrabold text-sm flex items-center justify-center shadow-md border border-[#E91E8C]/40">
-                        {isa.name.slice(0, 2).toUpperCase()}
+                  <div className="flex items-center gap-3.5">
+                    <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#12056E] to-[#1B0994] text-white font-extrabold text-sm flex items-center justify-center shadow-md border border-[#E91E8C]/40 shrink-0">
+                      {isa.code}
+                    </span>
+                    <div>
+                      <h3 className="font-extrabold text-lg text-[#12056E] leading-tight">
+                        Isapre {isa.name}
+                      </h3>
+                      <span className="text-xs font-extrabold text-[#E91E8C] block mt-0.5">
+                        {isa.badge}
                       </span>
-                      <div>
-                        <h3 className="font-extrabold text-lg text-[#12056E] leading-tight">
-                          Isapre {isa.name}
-                        </h3>
-                        <span className="text-[11px] font-extrabold text-[#E91E8C]">
-                          {isa.badge}
-                        </span>
-                      </div>
                     </div>
                   </div>
 
@@ -594,15 +422,15 @@ export function IsapresDirectory() {
                   <div className="mt-4 pt-3.5 border-t border-border space-y-2.5 text-xs">
                     <div>
                       <strong className="text-[#12056E] block">Red clínica destacada:</strong>
-                      <span className="text-[#0A033C]/80">{isa.clinics}</span>
+                      <span className="text-[#0A033C]/85 leading-5">{isa.clinics}</span>
                     </div>
                     <div>
                       <strong className="text-[#12056E] block">Bonificación y planes:</strong>
-                      <span className="text-[#0A033C]/80">{isa.coverageStrength}</span>
+                      <span className="text-[#0A033C]/85 leading-5">{isa.coverageStrength}</span>
                     </div>
                     <div>
                       <strong className="text-[#E91E8C] block">Beneficio familiar clave:</strong>
-                      <span className="text-[#0A033C]/80">{isa.familyBenefit}</span>
+                      <span className="text-[#0A033C]/85 leading-5">{isa.familyBenefit}</span>
                     </div>
                   </div>
                 </div>
@@ -611,7 +439,7 @@ export function IsapresDirectory() {
                   href={waUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-5 pt-3 border-t border-border inline-flex items-center justify-between text-xs font-extrabold text-[#12056E] hover:text-[#E91E8C] transition-colors"
+                  className="mt-5 pt-3.5 border-t border-border inline-flex items-center justify-between text-xs font-extrabold text-[#12056E] hover:text-[#E91E8C] transition-colors"
                 >
                   <span>Cotizar planes de {isa.name} gratis</span>
                   <ArrowRight size={15} className="text-[#E91E8C]" />
@@ -632,45 +460,6 @@ export function Benefits({ full = false }: { full?: boolean }) {
 
   return (
     <>
-      <section className="section">
-        <div className="site-container">
-          <div className="text-center max-w-3xl mx-auto">
-            <p className="eyebrow">POR QUÉ ELEGIR NUESTRA ORIENTACIÓN FAMILIAR</p>
-            <h2 className="section-title mt-2">
-              Cuidamos la salud de tu familia y el{" "}
-              <span className="text-[#E91E8C]">presupuesto de tu hogar</span>
-            </h2>
-            <p className="section-subtitle">
-              Sin tecnicismos ni textos repetidos: analizamos tu caso con cercanía para que cada
-              peso de tu cotización obligatoria se transforme en tranquilidad real.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6 mt-10">
-            {corePillars.map((b) => (
-              <article
-                key={b.title}
-                className={`benefit-card flex flex-col justify-between ${
-                  b.accent ? "border-[#E91E8C]/35 bg-[#F6F5FF]/60" : ""
-                }`}
-              >
-                <div>
-                  <span className={`icon-tile ${b.accent ? "icon-tile-magenta" : ""}`}>
-                    <b.icon size={24} />
-                  </span>
-                  <h3 className="font-extrabold text-base text-[#0A033C] mt-5">{b.title}</h3>
-                  <p className="text-[#0A033C]/80 text-xs leading-6 mt-2.5">{b.text}</p>
-                </div>
-                <p className="text-[#12056E] font-extrabold text-xs flex items-center gap-2 mt-5 pt-3.5 border-t border-border">
-                  <span className="h-2 w-2 rounded-full bg-[#E91E8C]" />
-                  {b.tag}
-                </p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <PlanComparator />
       <IsapresDirectory />
 
