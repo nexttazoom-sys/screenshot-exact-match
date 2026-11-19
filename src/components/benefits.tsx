@@ -114,16 +114,16 @@ const ISAPRES_DATA: IsapreInfo[] = [
   {
     name: "Nueva Masvida",
     code: "NU",
-    badge: "Fuerte Presencia Regional",
+    badge: "Fuerte Presencia Regional y Dental",
     featured: true,
     group: "destacadas",
     summary:
-      "Ofrece planes versátiles con excelente recepción en clínicas regionales y prestadores preferentes de la Región Metropolitana.",
+      "Ofrece planes versátiles con excelente recepción en clínicas regionales y prestadores de alta complejidad en Santiago y todo Chile.",
     clinics:
-      "Clínica Indisa, Bicentenario, Universitaria de Concepción, Puerto Montt, Antofagasta y red regional preferente.",
+      "Clínica Atacama, Indisa Puerto Montt, Clínica Las Condes, Clínico del Sur, Antofagasta, Clínica Los Leones, Clínica Lircay.",
     coverageStrength: "Planes preferentes y libre elección con tarifas competitivas en UF.",
     familyBenefit:
-      "Alternativa muy valorada por familias en regiones y cotizantes que buscan optimizar su 7% al cambiar de plan.",
+      "Dental 80% sin tope en prótesis fijas y removibles, frenillos, y reembolsos en 24 horas por WhatsApp.",
   },
   {
     name: "Colmena",

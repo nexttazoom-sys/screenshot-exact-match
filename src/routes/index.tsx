@@ -27,13 +27,13 @@ import {
   quoteSchema,
   WHATSAPP_DISPLAY,
 } from "@/lib/quote";
-import { pageHead } from "@/components/site-shell";
+import { pageHead, VictoriaYanezLogo } from "@/components/site-shell";
 
 export const Route = createFileRoute("/")({
   head: () =>
     pageHead(
-      "Asesoría Independiente 100% Gratuita para el Plan de Salud de tu Familia",
-      "Protege a tu familia y optimiza tu 7% de salud en Chile. Compara Colmena, Banmédica, Consalud, CruzBlanca, Nueva Masvida, Vida Tres y Esencial con asesoría 100% gratuita.",
+      "Asesoría Independiente 100% Gratuita en Planes de Salud",
+      "Victoria Yañez Asesorías: protege a tu familia y optimiza tu 7% de salud en Chile. Compara Banmédica, CruzBlanca, Nueva Masvida, Colmena, Consalud, Vida Tres y Esencial gratis.",
     ),
   component: Index,
 });
@@ -212,12 +212,10 @@ function Index() {
             <div className="hero-letter-box">
               <div className="flex items-center justify-between flex-wrap gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="brand-seal shrink-0 !w-10 !h-10" aria-hidden="true">
-                    <span className="brand-cross" />
-                  </span>
+                  <VictoriaYanezLogo size={42} />
                   <div>
                     <p className="text-xs font-extrabold text-[#12056E]">
-                      Orientación cercana, transparente y pensada en tu familia
+                      Victoria Yañez Asesorías · Orientación cercana y pensada en tu familia
                     </p>
                     <p className="text-[11px] text-[#0A033C]/75">
                       Resolvemos tus dudas paso a paso por WhatsApp o teléfono.

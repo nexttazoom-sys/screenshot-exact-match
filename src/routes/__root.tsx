@@ -76,13 +76,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Tu Plan de Salud | Asesoría Independiente 100% Gratuita en Chile" },
+      { title: "Victoria Yañez Asesorías | Asesoría Independiente en Salud 100% Gratuita" },
       {
         name: "description",
         content:
-          "Asesoría independiente 100% gratuita para elegir y optimizar tu plan de salud en Chile. Si sube tu sueldo, sube tu 7%: obtén la mejor cobertura por tu presupuesto. WhatsApp +56 9 4000 9671.",
+          "Victoria Yañez Asesorías: asesoría independiente 100% gratuita para elegir y optimizar tu plan de salud en Chile. Si sube tu sueldo, sube tu 7%: obtén la mejor cobertura por tu presupuesto. WhatsApp +56 9 4000 9671.",
       },
-      { property: "og:title", content: "Asesoría Independiente 100% Gratuita en Planes de Salud" },
+      { property: "og:title", content: "Victoria Yañez Asesorías | Planes de Salud e Isapres" },
       {
         property: "og:description",
         content:
