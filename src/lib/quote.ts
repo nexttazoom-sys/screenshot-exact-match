@@ -151,3 +151,20 @@ export const leadSchema = z.object({
   selected_plan: z.string().max(100).optional(),
   consent: z.boolean().refine((v) => v, "Autoriza el contacto para continuar."),
 });
+
+export const leadEmailPayloadSchema = z.object({
+  full_name: z.string().trim().min(2, "Ingresa tu nombre completo.").max(100),
+  phone: z.string().trim().min(6, "Ingresa un teléfono válido.").max(25),
+  email: z.string().trim().max(255).optional(),
+  salary: z.union([z.number(), z.string()]).optional(),
+  estimated_seven_percent: z.union([z.number(), z.string()]).optional(),
+  dependents: z.union([z.number(), z.string()]).optional(),
+  isapre_interest: z.string().max(160).optional(),
+  clinic_commune: z.string().max(160).optional(),
+  preferred_time: z.string().max(50).optional(),
+  main_question: z.string().max(200).optional(),
+  additional_message: z.string().max(300).optional(),
+  selected_plan: z.string().max(160).optional(),
+  sent_at: z.string().max(120).optional(),
+  is_test: z.boolean().optional(),
+});

@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { leadSchema } from "./quote";
+import { leadEmailPayloadSchema, leadSchema } from "./quote";
 
 export const submitLead = createServerFn({ method: "POST" })
   .inputValidator(leadSchema)
@@ -12,4 +12,11 @@ export const submitLead = createServerFn({ method: "POST" })
       .single();
     if (error || !row) throw new Error("No pudimos guardar tu solicitud. Intenta nuevamente.");
     return { id: row.id };
+  });
+
+export const sendLeadEmailServer = createServerFn({ method: "POST" })
+  .inputValidator(leadEmailPayloadSchema)
+  .handler(async ({ data }) => {
+    const { sendLeadEmailViaSmtp } = await import("./smtp-mailer.server");
+    return await sendLeadEmailViaSmtp(data);
   });
