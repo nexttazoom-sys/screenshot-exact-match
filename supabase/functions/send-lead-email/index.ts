@@ -10,6 +10,10 @@ const corsHeaders = {
 
 const RECIPIENTS = ["victoriayanezasesora@gmail.com", "victoriayanezasesora@vyplanesisapre.cl"];
 
+const DEFAULT_SMTP_HOST = "solu33.tuwebdns.net";
+const DEFAULT_SMTP_PORT = 465;
+const DEFAULT_SMTP_USER = "notificaciones@vyplanesisapre.cl";
+
 interface LeadEmailRequest {
   full_name: string;
   phone: string;
@@ -73,7 +77,7 @@ function buildHtmlEmail(payload: LeadEmailRequest, formattedDate: string): strin
           <tr>
             <td style="background:linear-gradient(135deg,#12056E 0%,#1B0994 100%);padding:26px 30px;color:#FFFFFF;border-bottom:4px solid #E91E8C;">
               <div style="font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#F01E8E;margin-bottom:6px;">
-                ${payload.is_test ? "PRUEBA DE SISTEMA SMTP · " : ""}VICTORIA YAÑEZ ASESORÍAS
+                ${payload.is_test ? "PRUEBA DE CONEXIÓN SMTP SSL/TLS · " : ""}VICTORIA YAÑEZ ASESORÍAS
               </div>
               <h1 style="margin:0;font-size:22px;font-weight:800;color:#FFFFFF;line-height:1.3;">
                 Nueva Solicitud de Asesoría Gratuita
@@ -203,7 +207,7 @@ function buildHtmlEmail(payload: LeadEmailRequest, formattedDate: string): strin
 
           <tr>
             <td style="background-color:#0A033C;padding:16px 30px;color:rgba(255,255,255,0.75);font-size:11px;text-align:center;">
-              Notificación automática enviada desde <strong>notificaciones@vyplanesisapre.cl</strong> · Victoria Yañez Asesorías
+              Notificación automática enviada vía SSL/TLS (${DEFAULT_SMTP_HOST}:${DEFAULT_SMTP_PORT}) desde <strong>${DEFAULT_SMTP_USER}</strong> · Victoria Yañez Asesorías
             </td>
           </tr>
         </table>
@@ -235,9 +239,9 @@ serve(async (req: Request) => {
       );
     }
 
-    const smtpHost = Deno.env.get("SMTP_HOST") || "mail.vyplanesisapre.cl";
-    const smtpPort = Number(Deno.env.get("SMTP_PORT") || "465");
-    const smtpUser = Deno.env.get("SMTP_USER") || "notificaciones@vyplanesisapre.cl";
+    const smtpHost = Deno.env.get("SMTP_HOST") || DEFAULT_SMTP_HOST;
+    const smtpPort = Number(Deno.env.get("SMTP_PORT") || String(DEFAULT_SMTP_PORT));
+    const smtpUser = Deno.env.get("SMTP_USER") || DEFAULT_SMTP_USER;
     const smtpPass = Deno.env.get("SMTP_PASS");
 
     if (!smtpPass) {
@@ -245,8 +249,10 @@ serve(async (req: Request) => {
         JSON.stringify({
           success: false,
           code: "MISSING_SMTP_SECRET",
-          error:
-            "Falta configurar el secreto SMTP_PASS en Supabase Edge Functions Secrets para notificaciones@vyplanesisapre.cl.",
+          host: smtpHost,
+          port: smtpPort,
+          user: smtpUser,
+          error: `Falta configurar el secreto SMTP_PASS en Supabase Secrets para autenticar ${smtpUser} en ${smtpHost}:${smtpPort} (SSL/TLS).`,
         }),
         {
           status: 503,
@@ -263,6 +269,7 @@ serve(async (req: Request) => {
         timeZone: "America/Santiago",
       }).format(new Date());
 
+    // Conexión SMTP con SSL/TLS implícito obligatorio en puerto 465
     const transporter = nodemailer.createTransport({
       host: smtpHost,
       port: smtpPort,
@@ -276,16 +283,15 @@ serve(async (req: Request) => {
       },
     });
 
-    const subject = payload.is_test
-      ? `Prueba de Correo SMTP - Nueva Solicitud de Asesoría Gratuita - ${payload.full_name}`
-      : `Nueva Solicitud de Asesoría Gratuita - ${payload.full_name}`;
+    await transporter.verify();
 
+    const subject = `Nueva Solicitud de Asesoría Gratuita - ${payload.full_name}`;
     const html = buildHtmlEmail(payload, formattedDate);
 
     const info = await transporter.sendMail({
       from: `"Victoria Yañez Asesorías" <${smtpUser}>`,
       to: RECIPIENTS.join(", "),
-      replyTo: payload.email ? payload.email : undefined,
+      replyTo: payload.email && payload.email !== "No informado" ? payload.email : undefined,
       subject,
       html,
     });
@@ -294,6 +300,10 @@ serve(async (req: Request) => {
       JSON.stringify({
         success: true,
         messageId: info.messageId,
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpPort === 465,
+        from: `Victoria Yañez Asesorías <${smtpUser}>`,
         recipients: RECIPIENTS,
       }),
       {
@@ -302,12 +312,17 @@ serve(async (req: Request) => {
       },
     );
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Error desconocido al conectar con SMTP.";
-    console.error("[send-lead-email] SMTP error:", message);
+    const message =
+      err instanceof Error
+        ? err.message
+        : "Error desconocido al conectar con solu33.tuwebdns.net:465.";
+    console.error("[send-lead-email] SMTP SSL/TLS error:", message);
     return new Response(
       JSON.stringify({
         success: false,
         code: "SMTP_CONNECTION_ERROR",
+        host: DEFAULT_SMTP_HOST,
+        port: DEFAULT_SMTP_PORT,
         error: message,
       }),
       {

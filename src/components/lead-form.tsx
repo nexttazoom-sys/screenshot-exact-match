@@ -128,16 +128,16 @@ export function LeadForm({
         const detail =
           res?.error ||
           fnErr?.message ||
-          "Asegúrate de haber desplegado la función send-lead-email y configurado SMTP_PASS en Supabase Secrets.";
+          "Asegúrate de haber configurado el secreto SMTP_PASS en Supabase Secrets para solu33.tuwebdns.net:465.";
         setTestResult({
           ok: false,
-          message: `No se pudo completar la prueba SMTP: ${detail}`,
+          message: `Verificación SMTP (solu33.tuwebdns.net:465 SSL/TLS): ${detail}`,
         });
       } else {
         setTestResult({
           ok: true,
           message:
-            "¡Prueba SMTP exitosa! Correo enviado desde notificaciones@vyplanesisapre.cl hacia victoriayanezasesora@gmail.com y victoriayanezasesora@vyplanesisapre.cl.",
+            "¡Conexión SSL/TLS a solu33.tuwebdns.net:465 verificada! Correo enviado desde notificaciones@vyplanesisapre.cl hacia victoriayanezasesora@gmail.com y victoriayanezasesora@vyplanesisapre.cl.",
         });
       }
     } catch (err) {
