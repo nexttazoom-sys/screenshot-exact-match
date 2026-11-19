@@ -14,7 +14,7 @@ import {
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { buildAdvisoryWhatsAppUrl, leadSchema, money, WHATSAPP_DISPLAY } from "@/lib/quote";
-import { submitLead } from "@/lib/leads.functions";
+import { sendLeadEmailServer, submitLead } from "@/lib/leads.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface LeadFormProps {
@@ -29,6 +29,8 @@ export function LeadForm({
   initialDependents = 0,
 }: LeadFormProps) {
   const submit = useServerFn(submitLead);
+  const sendEmailServer = useServerFn(sendLeadEmailServer);
+
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -93,6 +95,58 @@ export function LeadForm({
     setPreferredTime("09:00–12:00");
   }
 
+  async function dispatchLeadEmail(payload: {
+    full_name: string;
+    phone: string;
+    email: string;
+    salary: number | string;
+    estimated_seven_percent?: number | undefined;
+    dependents: string;
+    isapre_interest: string;
+    clinic_commune: string;
+    preferred_time: string;
+    main_question: string;
+    additional_message: string;
+    selected_plan?: string | undefined;
+    sent_at: string;
+    is_test?: boolean | undefined;
+  }): Promise<{ ok: boolean; error?: string | undefined }> {
+    // 1. Intentar primero mediante el módulo SSR de TanStack Start (`smtp-mailer.server.ts`)
+    try {
+      const serverRes = await sendEmailServer({ data: payload });
+      if (serverRes?.success) {
+        return { ok: true };
+      }
+    } catch {
+      // Continuar al fallback de Supabase Edge Function
+    }
+
+    // 2. Intentar mediante la Supabase Edge Function `send-lead-email`
+    try {
+      const { data: fnRes, error: fnErr } = await supabase.functions.invoke("send-lead-email", {
+        body: payload,
+      });
+      if (!fnErr && fnRes?.success) {
+        return { ok: true };
+      }
+      return {
+        ok: false,
+        error:
+          fnRes?.error ||
+          fnErr?.message ||
+          "Falta configurar el secreto SMTP_PASS para notificaciones@vyplanesisapre.cl en solu33.tuwebdns.net:465.",
+      };
+    } catch (err) {
+      return {
+        ok: false,
+        error:
+          err instanceof Error
+            ? err.message
+            : "No fue posible conectar con el servidor SMTP solu33.tuwebdns.net:465.",
+      };
+    }
+  }
+
   async function runInternalSmtpTest() {
     setTestingSmtp(true);
     setTestResult(null);
@@ -103,35 +157,29 @@ export function LeadForm({
         timeZone: "America/Santiago",
       }).format(new Date());
 
-      const { data: res, error: fnErr } = await supabase.functions.invoke("send-lead-email", {
-        body: {
-          full_name: fullName.trim() || "Cliente de Prueba (Verificación SMTP)",
-          phone: phone.trim() || "+56 9 4000 9671",
-          email: email.trim() || "victoriayanezasesora@gmail.com",
-          salary: numericSalary || 1500000,
-          estimated_seven_percent: estimatedSevenPercent || 105000,
-          dependents: `${dependents} carga(s)`,
-          isapre_interest: isapreInterest,
-          clinic_commune: clinicCommune.trim() || "Santiago / Regiones",
-          preferred_time: preferredTime,
-          main_question: mainQuestion,
-          additional_message:
-            customNote.trim() ||
-            "Correo de prueba enviado para verificar conexión SMTP desde notificaciones@vyplanesisapre.cl.",
-          selected_plan: selectedPlan || "Prueba de sistema",
-          sent_at: sentAt,
-          is_test: true,
-        },
+      const res = await dispatchLeadEmail({
+        full_name: fullName.trim() || "Cliente de Prueba (Verificación SMTP)",
+        phone: phone.trim() || "+56 9 4000 9671",
+        email: email.trim() || "victoriayanezasesora@gmail.com",
+        salary: numericSalary || 1500000,
+        estimated_seven_percent: estimatedSevenPercent || 105000,
+        dependents: `${dependents} carga(s)`,
+        isapre_interest: isapreInterest,
+        clinic_commune: clinicCommune.trim() || "Santiago / Regiones",
+        preferred_time: preferredTime,
+        main_question: mainQuestion,
+        additional_message:
+          customNote.trim() ||
+          "Correo de prueba enviado para verificar conexión SMTP SSL/TLS (solu33.tuwebdns.net:465) desde notificaciones@vyplanesisapre.cl.",
+        selected_plan: selectedPlan || "Prueba de sistema",
+        sent_at: sentAt,
+        is_test: true,
       });
 
-      if (fnErr || !res?.success) {
-        const detail =
-          res?.error ||
-          fnErr?.message ||
-          "Asegúrate de haber configurado el secreto SMTP_PASS en Supabase Secrets para solu33.tuwebdns.net:465.";
+      if (!res.ok) {
         setTestResult({
           ok: false,
-          message: `Verificación SMTP (solu33.tuwebdns.net:465 SSL/TLS): ${detail}`,
+          message: `Verificación SMTP (solu33.tuwebdns.net:465 SSL/TLS): ${res.error}`,
         });
       } else {
         setTestResult({
@@ -140,14 +188,6 @@ export function LeadForm({
             "¡Conexión SSL/TLS a solu33.tuwebdns.net:465 verificada! Correo enviado desde notificaciones@vyplanesisapre.cl hacia victoriayanezasesora@gmail.com y victoriayanezasesora@vyplanesisapre.cl.",
         });
       }
-    } catch (err) {
-      setTestResult({
-        ok: false,
-        message:
-          err instanceof Error
-            ? `Error al invocar send-lead-email: ${err.message}`
-            : "Error de conexión al probar la Edge Function.",
-      });
     } finally {
       setTestingSmtp(false);
     }
@@ -200,41 +240,35 @@ export function LeadForm({
       // Ignorado si no está disponible la tabla local
     });
 
-    // 2. Enviar correo real mediante la Supabase Edge Function `send-lead-email`
+    // 2. Enviar correo real a victoriayanezasesora@gmail.com y victoriayanezasesora@vyplanesisapre.cl
     try {
-      const { data: emailRes, error: fnError } = await supabase.functions.invoke(
-        "send-lead-email",
-        {
-          body: {
-            full_name: currentSnapshotName,
-            phone: phone.trim(),
-            email: email.trim() || "No informado",
-            salary: numericSalary > 0 ? numericSalary : "No informada",
-            estimated_seven_percent: estimatedSevenPercent > 0 ? estimatedSevenPercent : undefined,
-            dependents:
-              Number(dependents) === 0
-                ? "Sin cargas (solo cotizante)"
-                : `${dependents} carga(s) familiar(es)`,
-            isapre_interest: isapreInterest,
-            clinic_commune: clinicCommune.trim() || "No especificada",
-            preferred_time: preferredTime,
-            main_question: mainQuestion,
-            additional_message: customNote.trim() || "Sin comentarios adicionales",
-            selected_plan: selectedPlan,
-            sent_at: sentAt,
-          },
-        },
-      );
+      const res = await dispatchLeadEmail({
+        full_name: currentSnapshotName,
+        phone: phone.trim(),
+        email: email.trim() || "No informado",
+        salary: numericSalary > 0 ? numericSalary : "No informada",
+        estimated_seven_percent: estimatedSevenPercent > 0 ? estimatedSevenPercent : undefined,
+        dependents:
+          Number(dependents) === 0
+            ? "Sin cargas (solo cotizante)"
+            : `${dependents} carga(s) familiar(es)`,
+        isapre_interest: isapreInterest,
+        clinic_commune: clinicCommune.trim() || "No especificada",
+        preferred_time: preferredTime,
+        main_question: mainQuestion,
+        additional_message: customNote.trim() || "Sin comentarios adicionales",
+        selected_plan: selectedPlan,
+        sent_at: sentAt,
+      });
 
-      if (fnError || !emailRes?.success) {
-        setSubmittedName(currentSnapshotName);
-        setSubmittedWaUrl(currentSnapshotWaUrl);
+      setSubmittedName(currentSnapshotName);
+      setSubmittedWaUrl(currentSnapshotWaUrl);
+
+      if (!res.ok) {
         setSmtpFallback(true);
         return;
       }
 
-      setSubmittedName(currentSnapshotName);
-      setSubmittedWaUrl(currentSnapshotWaUrl);
       resetFormFields();
       setSuccess(true);
     } catch {
