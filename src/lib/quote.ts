@@ -15,7 +15,10 @@ export interface AdvisoryWhatsAppSummary {
   phone?: string | undefined;
   salary?: string | number | undefined;
   dependents?: string | number | undefined;
+  isapre_interest?: string | undefined;
+  clinic_commune?: string | undefined;
   main_question?: string | undefined;
+  additional_message?: string | undefined;
   region?: string | undefined;
   selected_plan?: string | undefined;
   preferred_time?: string | undefined;
@@ -24,11 +27,12 @@ export interface AdvisoryWhatsAppSummary {
 
 export function buildAdvisoryWhatsAppUrl(data: AdvisoryWhatsAppSummary): string {
   const lines = [
-    "Hola, solicito asesoría independiente 100% gratuita para elegir/optimizar mi plan de salud:",
+    "Hola Victoria, solicito asesoría independiente 100% gratuita para elegir/optimizar mi plan de salud:",
     "",
   ];
   if (data.full_name) lines.push(`• Nombre: ${data.full_name}`);
   if (data.phone) lines.push(`• Teléfono / WhatsApp: ${data.phone}`);
+  if (data.email) lines.push(`• Correo: ${data.email}`);
   if (data.salary !== undefined && data.salary !== "") {
     const numSalary = Number(data.salary);
     if (!Number.isNaN(numSalary) && numSalary > 0) {
@@ -48,12 +52,14 @@ export function buildAdvisoryWhatsAppUrl(data: AdvisoryWhatsAppSummary): string 
       : String(data.dependents);
     lines.push(`• Cargas: ${depLabel}`);
   }
+  if (data.isapre_interest) lines.push(`• Isapre actual o de interés: ${data.isapre_interest}`);
+  if (data.clinic_commune) lines.push(`• Clínica / Comuna: ${data.clinic_commune}`);
   if (data.region) lines.push(`• Región: ${data.region}`);
-  if (data.main_question) lines.push(`• Duda principal: ${data.main_question}`);
+  if (data.main_question) lines.push(`• Motivo principal: ${data.main_question}`);
+  if (data.additional_message) lines.push(`• Consulta adicional: ${data.additional_message}`);
   if (data.selected_plan) lines.push(`• Escenario / Plan de interés: ${data.selected_plan}`);
   if (data.preferred_time) lines.push(`• Horario preferido: ${data.preferred_time}`);
-  if (data.email) lines.push(`• Correo: ${data.email}`);
-  lines.push("", "¿Me pueden orientar para obtener la mejor cobertura posible con mi presupuesto?");
+  lines.push("", "¿Me puedes orientar para obtener la mejor cobertura posible con mi presupuesto?");
   return buildWhatsAppUrl(lines.join("\n"));
 }
 
