@@ -2,6 +2,7 @@ import { useState } from "react";
 import { MessageCircle, ArrowRight, SlidersHorizontal, Sparkles } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { buildAdvisoryWhatsAppUrl, buildWhatsAppUrl, money, WHATSAPP_DISPLAY } from "@/lib/quote";
+import { ClinicCommuneSelect } from "./clinic-commune-select";
 
 export interface ComparablePlan {
   id: string;
@@ -178,6 +179,7 @@ const ISAPRES_DATA: IsapreInfo[] = [
 export function PlanComparator() {
   const [filter, setFilter] = useState<string>("todos");
   const [monthlySalary, setMonthlySalary] = useState<number>(1500000);
+  const [selectedClinicCommune, setSelectedClinicCommune] = useState<string>("");
 
   const ufReference = 40000;
   const safeSalary = Math.max(1000000, monthlySalary);
@@ -199,35 +201,51 @@ export function PlanComparator() {
               <span className="text-[#E91E8C]">necesidad familiar</span>
             </h2>
             <p className="section-subtitle max-w-2xl">
-              Ajusta tu renta imponible aproximada (desde $1.000.000) y filtra por tu prioridad para
-              revisar opciones de cobertura clínica, bonificaciones y calce con tu 7%.
+              Ajusta tu renta imponible aproximada (desde $1.000.000), elige tu clínica o comuna de
+              preferencia y filtra por tu prioridad para revisar opciones de cobertura clínica,
+              bonificaciones y calce con tu 7%.
             </p>
           </div>
 
-          {/* Control rápido de renta con mínimo $1.000.000 */}
-          <div className="bg-white border-2 border-[#12056E]/15 rounded-2xl p-4 shadow-sm min-w-[280px]">
-            <label className="text-[11px] font-extrabold uppercase tracking-wider text-[#12056E] block">
-              Tu renta imponible aprox.: <span className="text-[#E91E8C]">{money(safeSalary)}</span>
-            </label>
-            <input
-              type="range"
-              min={1000000}
-              max={4500000}
-              step={100000}
-              value={safeSalary}
-              onChange={(e) => setMonthlySalary(Math.max(1000000, Number(e.target.value)))}
-              className="w-full accent-[#E91E8C] mt-2 cursor-pointer"
-              aria-label="Renta imponible aproximada desde un millón de pesos"
-            />
-            <div className="flex justify-between items-center text-[10px] text-[#0A033C]/65 mt-0.5">
-              <span>Mín: $1.000.000</span>
-              <span>Máx: $4.500.000+</span>
+          {/* Control rápido de renta con mínimo $1.000.000 + selector de clínica/comuna */}
+          <div className="bg-white border-2 border-[#12056E]/15 rounded-2xl p-4 shadow-sm min-w-[290px] sm:min-w-[340px] space-y-3">
+            <div>
+              <label className="text-[11px] font-extrabold uppercase tracking-wider text-[#12056E] block">
+                Tu renta imponible aprox.:{" "}
+                <span className="text-[#E91E8C]">{money(safeSalary)}</span>
+              </label>
+              <input
+                type="range"
+                min={1000000}
+                max={4500000}
+                step={100000}
+                value={safeSalary}
+                onChange={(e) => setMonthlySalary(Math.max(1000000, Number(e.target.value)))}
+                className="w-full accent-[#E91E8C] mt-2 cursor-pointer"
+                aria-label="Renta imponible aproximada desde un millón de pesos"
+              />
+              <div className="flex justify-between items-center text-[10px] text-[#0A033C]/65 mt-0.5">
+                <span>Mín: $1.000.000</span>
+                <span>Máx: $4.500.000+</span>
+              </div>
+              <div className="flex justify-between items-center text-xs mt-1.5 pt-1.5 border-t border-border">
+                <span className="text-[#0A033C]/70">Tu 7% mensual estimado:</span>
+                <strong className="text-[#12056E] bg-[#F6F5FF] px-2.5 py-0.5 rounded-full">
+                  {money(sevenPercentCLP)}/mes
+                </strong>
+              </div>
             </div>
-            <div className="flex justify-between items-center text-xs mt-1.5 pt-1.5 border-t border-border">
-              <span className="text-[#0A033C]/70">Tu 7% mensual estimado:</span>
-              <strong className="text-[#12056E] bg-[#F6F5FF] px-2.5 py-0.5 rounded-full">
-                {money(sevenPercentCLP)}/mes
-              </strong>
+
+            <div className="pt-2 border-t border-border">
+              <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#12056E] block mb-1.5">
+                Clínica de preferencia / Comuna
+              </span>
+              <ClinicCommuneSelect
+                name="comparator_clinic_commune"
+                value={selectedClinicCommune}
+                onChange={setSelectedClinicCommune}
+                placeholder="Buscar comuna o clínica (ej: Copiapó, Indisa...)"
+              />
             </div>
           </div>
         </div>
@@ -321,13 +339,19 @@ export function PlanComparator() {
                   <p className="text-[11px] text-[#0A033C]/80 mt-3 leading-5">
                     <strong className="text-[#12056E]">Clínicas destacadas:</strong> {plan.clinics}
                   </p>
+                  {selectedClinicCommune && (
+                    <p className="text-[11px] font-bold text-[#E91E8C] mt-1.5 leading-4">
+                      ✓ Evaluando cobertura en: {selectedClinicCommune}
+                    </p>
+                  )}
                 </div>
 
                 <a
                   href={buildAdvisoryWhatsAppUrl({
                     salary: safeSalary,
+                    clinic_commune: selectedClinicCommune || undefined,
                     selected_plan: `${plan.name} (${plan.ufCost} UF ref.)`,
-                    main_question: `Me interesó "${plan.name}" con mi renta aprox. de ${money(safeSalary)} y quiero ver opciones reales en Isapres`,
+                    main_question: `Me interesó "${plan.name}" con mi renta aprox. de ${money(safeSalary)}${selectedClinicCommune ? ` y preferencia en ${selectedClinicCommune}` : ""} y quiero ver opciones reales en Isapres`,
                   })}
                   target="_blank"
                   rel="noreferrer"

@@ -21,6 +21,7 @@ import {
   type QuoteInput,
 } from "@/lib/quote";
 import { LeadForm } from "./lead-form";
+import { ClinicCommuneSelect } from "./clinic-commune-select";
 
 export function QuoteFields({
   value,
@@ -180,18 +181,18 @@ export function QuoteWizard({
 
         {step === 2 && (
           <div className="grid sm:grid-cols-2 gap-5">
-            <label className="field-label">
-              Clínica o prestador de preferencia
-              <input
-                className="field"
-                maxLength={100}
-                value={q.clinic}
-                onChange={(e) => setQ({ ...q, clinic: e.target.value })}
+            <div className="field-label">
+              <span>Clínica de preferencia / Comuna</span>
+              <ClinicCommuneSelect
+                name="clinic"
+                value={q.clinic === "Sin preferencia" ? "" : q.clinic}
+                onChange={(val) => setQ({ ...q, clinic: val || "Sin preferencia" })}
+                placeholder="Buscar comuna o clínica (ej: Copiapó, Las Condes, Indisa...)"
               />
               <span className="text-xs text-muted-foreground font-normal">
                 Te ayudamos a comparar qué planes tienen mejor cobertura en tu clínica preferida.
               </span>
-            </label>
+            </div>
             <label className="field-label">
               Tipo de cobertura buscada
               <select
@@ -251,6 +252,7 @@ export function QuoteWizard({
                   salary: q.salary,
                   dependents: q.dependents,
                   region: q.region,
+                  clinic_commune: q.clinic !== "Sin preferencia" ? q.clinic : undefined,
                   main_question: `Simulé mi 7% (${money(q.salary * 0.07)}/mes) y quiero revisar qué planes reales me dan la mejor cobertura`,
                   selected_plan: `${q.planType} · Clínica: ${q.clinic}`,
                 })}
@@ -269,6 +271,7 @@ export function QuoteWizard({
                   salary: q.salary,
                   dependents: q.dependents,
                   region: q.region,
+                  clinic_commune: q.clinic !== "Sin preferencia" ? q.clinic : undefined,
                   selected_plan: `Escenario ${p.name} (${p.uf.toFixed(2)} UF/mes · ${q.planType})`,
                   main_question:
                     "Quiero comparar opciones reales equivalentes a este escenario con mi 7%",
@@ -361,6 +364,7 @@ export function QuoteWizard({
                   )}
                   initialSalary={q.salary}
                   initialDependents={q.dependents}
+                  initialClinicCommune={q.clinic !== "Sin preferencia" ? q.clinic : ""}
                 />
               </div>
             )}

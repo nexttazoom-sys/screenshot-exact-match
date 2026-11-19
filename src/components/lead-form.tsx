@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
+import { ClinicCommuneSelect } from "./clinic-commune-select";
 import { buildAdvisoryWhatsAppUrl, leadSchema, money, WHATSAPP_DISPLAY } from "@/lib/quote";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -19,6 +20,7 @@ export interface LeadFormProps {
   selectedPlan?: string | undefined;
   initialSalary?: number | undefined;
   initialDependents?: number | undefined;
+  initialClinicCommune?: string | undefined;
 }
 
 interface SmtpApiResponse {
@@ -54,6 +56,7 @@ export function LeadForm({
   selectedPlan,
   initialSalary = 1500000,
   initialDependents = 0,
+  initialClinicCommune = "",
 }: LeadFormProps) {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -65,7 +68,7 @@ export function LeadForm({
   const [isapreInterest, setIsapreInterest] = useState(
     "Por evaluar (Comparar Banmédica, CruzBlanca, Nueva Masvida y más)",
   );
-  const [clinicCommune, setClinicCommune] = useState("");
+  const [clinicCommune, setClinicCommune] = useState(initialClinicCommune);
   const [mainQuestion, setMainQuestion] = useState(
     "Subió mi sueldo / mi 7% y quiero mejorar mi cobertura",
   );
@@ -477,17 +480,15 @@ export function LeadForm({
         </select>
       </label>
 
-      <label className="field-label">
-        Clínica de preferencia / Comuna
-        <input
-          className="field"
+      <div className="field-label">
+        <span>Clínica de preferencia / Comuna</span>
+        <ClinicCommuneSelect
           name="clinic_commune"
-          maxLength={120}
           value={clinicCommune}
-          onChange={(e) => setClinicCommune(e.target.value)}
-          placeholder="Ej: Santa María, Indisa, El Loa / Providencia..."
+          onChange={setClinicCommune}
+          placeholder="Buscar comuna o clínica (ej: Copiapó, Las Condes, Indisa...)"
         />
-      </label>
+      </div>
 
       <label className="field-label">
         Horario preferido de contacto

@@ -82,6 +82,194 @@ export const regions = [
   "Magallanes",
 ] as const;
 
+export interface CommuneClinicsGroup {
+  commune: string;
+  clinics: readonly string[];
+}
+
+export const CLINICS_BY_COMMUNE: readonly CommuneClinicsGroup[] = [
+  {
+    commune: "Arica",
+    clinics: ["Clínica San José"],
+  },
+  {
+    commune: "Iquique",
+    clinics: ["RedSalud Iquique", "Clínica Tarapacá"],
+  },
+  {
+    commune: "Antofagasta",
+    clinics: ["Clínica Bupa Antofagasta", "Clínica La Portada"],
+  },
+  {
+    commune: "Calama",
+    clinics: ["Clínica Andes Salud El Loa"],
+  },
+  {
+    commune: "Copiapó",
+    clinics: ["Clínica RCR Atacama"],
+  },
+  {
+    commune: "Diego de Almagro",
+    clinics: ["Clínica San Lorenzo"],
+  },
+  {
+    commune: "La Serena",
+    clinics: ["Clínica RedSalud Elqui"],
+  },
+  {
+    commune: "Viña del Mar",
+    clinics: ["Clínica Ciudad del Mar", "Clínica Reñaca", "Hospital Clínico Viña del Mar"],
+  },
+  {
+    commune: "Valparaíso",
+    clinics: ["RedSalud Valparaíso"],
+  },
+  {
+    commune: "Quilpué",
+    clinics: ["Clínica Los Carrera"],
+  },
+  {
+    commune: "La Calera",
+    clinics: ["Clínica Los Leones"],
+  },
+  {
+    commune: "Los Andes",
+    clinics: ["Clínica Río Blanco"],
+  },
+  {
+    commune: "San Antonio",
+    clinics: ["Clínica San Antonio"],
+  },
+  {
+    commune: "Santiago",
+    clinics: [
+      "Clínica Alemana",
+      "Clínica Las Condes",
+      "Clínica Santa María",
+      "Clínica INDISA",
+      "Clínica Dávila",
+      "Clínica Dávila Vespucio",
+      "Clínica Bupa Santiago",
+      "Clínica Bupa La Florida",
+      "Clínica RedSalud Vitacura",
+      "Clínica RedSalud Providencia",
+      "Clínica RedSalud Santiago",
+      "Clínica INDISA Maipú",
+      "Clínica MEDS",
+      "Clínica MEDS Vitacura",
+      "Clínica San Carlos de Apoquindo UC CHRISTUS",
+      "Clínica Universidad de los Andes",
+      "Hospital Clínico Universidad de Chile",
+      "Hospital Clínico UC CHRISTUS",
+      "Clínica Alemana de La Dehesa",
+      "Clínica Hospital del Profesor",
+    ],
+  },
+  {
+    commune: "Rancagua",
+    clinics: ["Clínica Isamédica", "Clínica FUSAT", "Clínica de Salud Integral"],
+  },
+  {
+    commune: "San Fernando",
+    clinics: ["Clínica San Francisco"],
+  },
+  {
+    commune: "Talca",
+    clinics: [
+      "Clínica Andes Salud Talca",
+      "Clínica Regional del Maule",
+      "Clínica Universidad Católica del Maule",
+    ],
+  },
+  {
+    commune: "Chillán",
+    clinics: ["Clínica Andes Salud Chillán", "Clínica Las Amapolas"],
+  },
+  {
+    commune: "Concepción",
+    clinics: ["Clínica Salud Concepción", "Sanatorio Alemán", "Clínica del Sur"],
+  },
+  {
+    commune: "Hualpén",
+    clinics: ["Clínica Andes Salud Concepción"],
+  },
+  {
+    commune: "Talcahuano",
+    clinics: ["Clínica Biobío"],
+  },
+  {
+    commune: "Los Ángeles",
+    clinics: ["Clínica Adventista", "Clínica Los Andes"],
+  },
+  {
+    commune: "Temuco",
+    clinics: ["Clínica Alemana de Temuco", "Clínica RedSalud Mayor de Temuco"],
+  },
+  {
+    commune: "Valdivia",
+    clinics: ["Clínica Alemana de Valdivia"],
+  },
+  {
+    commune: "Puerto Montt",
+    clinics: ["Clínica Andes Salud Puerto Montt", "Clínica Puerto Montt"],
+  },
+  {
+    commune: "Osorno",
+    clinics: ["Clínica Alemana de Osorno"],
+  },
+  {
+    commune: "Puerto Varas",
+    clinics: ["Clínica de Puerto Varas"],
+  },
+  {
+    commune: "Coyhaique",
+    clinics: ["Hospital Regional de Coyhaique"],
+  },
+  {
+    commune: "Punta Arenas",
+    clinics: ["Clínica Magallanes", "Clínica RedSalud Magallanes"],
+  },
+] as const;
+
+export const OTHER_CLINIC_OPTION = "Otra comuna / clínica no listada";
+
+export interface ClinicCommuneOption {
+  commune: string;
+  clinic: string;
+  label: string;
+  searchKey: string;
+}
+
+export function normalizeSearchText(text: string): string {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+export const CLINIC_COMMUNE_OPTIONS: readonly ClinicCommuneOption[] = CLINICS_BY_COMMUNE.flatMap(
+  (group) =>
+    group.clinics.map((clinic) => {
+      const label = `${group.commune} — ${clinic}`;
+      return {
+        commune: group.commune,
+        clinic,
+        label,
+        searchKey: normalizeSearchText(`${group.commune} ${clinic} ${label}`),
+      };
+    }),
+);
+
+export function filterClinicCommuneOptions(query: string): ClinicCommuneOption[] {
+  const normalized = normalizeSearchText(query);
+  if (!normalized) return [...CLINIC_COMMUNE_OPTIONS];
+  const terms = normalized.split(/\s+/).filter(Boolean);
+  return CLINIC_COMMUNE_OPTIONS.filter((opt) =>
+    terms.every((term) => opt.searchKey.includes(term)),
+  );
+}
+
 export const quoteSchema = z.object({
   salary: z.coerce.number().min(100000).max(100000000),
   age: z.coerce.number().int().min(18).max(100),

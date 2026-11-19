@@ -9,6 +9,9 @@ import {
   WHATSAPP_DISPLAY,
   buildWhatsAppUrl,
   buildAdvisoryWhatsAppUrl,
+  CLINICS_BY_COMMUNE,
+  CLINIC_COMMUNE_OPTIONS,
+  filterClinicCommuneOptions,
 } from "@/lib/quote";
 import {
   DEFAULT_SMTP_CONFIG,
@@ -96,5 +99,25 @@ describe("simulación, enlaces de WhatsApp y módulo de correo SMTP", () => {
     expect(html).toContain("Carolina Valdés");
     expect(html).toContain("Isapre Banmédica");
     expect(html).toContain("solu33.tuwebdns.net:465");
+  });
+
+  it("incluye todas las comunas y clínicas de Chile y permite filtrar por comuna o clínica", () => {
+    expect(CLINICS_BY_COMMUNE.length).toBe(29);
+    expect(CLINIC_COMMUNE_OPTIONS.some((o) => o.label === "Copiapó — Clínica RCR Atacama")).toBe(
+      true,
+    );
+    expect(CLINIC_COMMUNE_OPTIONS.some((o) => o.label === "Santiago — Clínica Las Condes")).toBe(
+      true,
+    );
+    expect(
+      CLINIC_COMMUNE_OPTIONS.some((o) => o.label === "Punta Arenas — Clínica RedSalud Magallanes"),
+    ).toBe(true);
+
+    expect(filterClinicCommuneOptions("copiapo")[0]?.label).toBe("Copiapó — Clínica RCR Atacama");
+    expect(filterClinicCommuneOptions("las condes")[0]?.label).toBe(
+      "Santiago — Clínica Las Condes",
+    );
+    expect(filterClinicCommuneOptions("indisa").length).toBe(2);
+    expect(filterClinicCommuneOptions("antofagasta").length).toBe(2);
   });
 });
