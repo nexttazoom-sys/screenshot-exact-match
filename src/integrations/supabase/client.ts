@@ -1,11 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
-import { brokeredPreviewStorage } from "./previewAuthStorage";
 
 const FALLBACK_SUPABASE_URL = "https://oqnuwfeyszymfpcbgzww.supabase.co";
 const FALLBACK_SUPABASE_KEY = "sb_publishable_EH8KbkOU9RDWaBYWYxGtjw_MS9K1U5m";
 
-function isNewSupabaseApiKey(value: string): boolean {
+export function isOpaqueSupabaseKey(value: string): boolean {
   return value.startsWith("sb_publishable_") || value.startsWith("sb_secret_");
 }
 
@@ -20,7 +19,7 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
     }
 
     if (
-      isNewSupabaseApiKey(supabaseKey) &&
+      isOpaqueSupabaseKey(supabaseKey) &&
       headers.get("Authorization") === `Bearer ${supabaseKey}`
     ) {
       headers.delete("Authorization");
@@ -38,7 +37,9 @@ export function getSupabaseEnvConfig(): { url: string; key: string } {
       ? (process.env as Record<string, string | undefined>)
       : {};
 
-  const url = (env["VITE_SUPABASE_URL"] || nodeEnv["SUPABASE_URL"] || FALLBACK_SUPABASE_URL).trim();
+  const url = (env["VITE_SUPABASE_URL"] || nodeEnv["SUPABASE_URL"] || FALLBACK_SUPABASE_URL)
+    .trim()
+    .replace(/\/+$/, "");
 
   const key = (
     env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
@@ -51,6 +52,15 @@ export function getSupabaseEnvConfig(): { url: string; key: string } {
   return { url, key };
 }
 
+function getBrowserStorage(): Storage | undefined {
+  if (typeof window === "undefined") return undefined;
+  try {
+    return window.localStorage;
+  } catch {
+    return undefined;
+  }
+}
+
 function createSupabaseClient() {
   const { url, key } = getSupabaseEnvConfig();
 
@@ -59,7 +69,7 @@ function createSupabaseClient() {
       fetch: createSupabaseFetch(key),
     },
     auth: {
-      storage: brokeredPreviewStorage(),
+      storage: getBrowserStorage(),
       persistSession: true,
       autoRefreshToken: true,
     },

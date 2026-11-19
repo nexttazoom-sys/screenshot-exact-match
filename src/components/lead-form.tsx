@@ -14,7 +14,11 @@ import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { ClinicCommuneSelect } from "./clinic-commune-select";
 import { buildAdvisoryWhatsAppUrl, leadSchema, money, WHATSAPP_DISPLAY } from "@/lib/quote";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  getSupabaseEnvConfig,
+  isOpaqueSupabaseKey,
+  supabase,
+} from "@/integrations/supabase/client";
 
 export interface LeadFormProps {
   selectedPlan?: string | undefined;
@@ -163,8 +167,39 @@ export function LeadForm({
       // Si el endpoint local/PHP no está disponible en este hosting, continuar con Supabase Edge Function
     }
 
-    // 2. Intentar mediante la Supabase Edge Function `send-lead-email`
+    // 2. Intentar directamente contra el endpoint estándar de Supabase Edge Function:
+    // `${VITE_SUPABASE_URL}/functions/v1/send-lead-email`
     try {
+      const { url: supabaseUrl, key: supabaseKey } = getSupabaseEnvConfig();
+      const edgeHeaders: Record<string, string> = {
+        "Content-Type": "application/json",
+        apikey: supabaseKey,
+      };
+      if (!isOpaqueSupabaseKey(supabaseKey)) {
+        edgeHeaders["Authorization"] = `Bearer ${supabaseKey}`;
+      }
+
+      const edgeRes = await fetch(`${supabaseUrl}/functions/v1/send-lead-email`, {
+        method: "POST",
+        headers: edgeHeaders,
+        body: JSON.stringify(payload),
+      });
+
+      const edgeContentType = edgeRes.headers.get("content-type") || "";
+      if (edgeContentType.includes("application/json")) {
+        const edgeJson = (await edgeRes.json()) as SmtpApiResponse;
+        if (edgeRes.ok && edgeJson.success) {
+          return { ok: true, messageId: edgeJson.messageId };
+        }
+        if (edgeJson.error || edgeJson.message) {
+          return {
+            ok: false,
+            error: phpEndpointError || edgeJson.error || edgeJson.message,
+          };
+        }
+      }
+
+      // Respaldo adicional con cliente @supabase/supabase-js
       const { data: fnRes, error: fnErr } = await supabase.functions.invoke<SmtpApiResponse>(
         "send-lead-email",
         {

@@ -211,8 +211,9 @@ function buildHtmlEmail(payload: LeadEmailRequest, formattedDate: string): strin
                     ${escapeHtml(payload.additional_message || "Sin comentarios adicionales")}
                   </td>
                 </tr>
-                ${payload.selected_plan
-      ? `<tr>
+                ${
+                  payload.selected_plan
+                    ? `<tr>
                   <td style="padding:11px 12px;border-bottom:1px solid #ECEAF9;font-weight:700;color:#12056E;">
                     Plan / Escenario preseleccionado
                   </td>
@@ -220,8 +221,8 @@ function buildHtmlEmail(payload: LeadEmailRequest, formattedDate: string): strin
                     ${escapeHtml(payload.selected_plan)}
                   </td>
                 </tr>`
-      : ""
-    }
+                    : ""
+                }
                 <tr>
                   <td style="padding:11px 12px;font-weight:700;color:#12056E;">
                     Fecha y hora de envío
@@ -232,14 +233,15 @@ function buildHtmlEmail(payload: LeadEmailRequest, formattedDate: string): strin
                 </tr>
               </table>
 
-              ${waClientUrl
-      ? `<div style="margin-top:22px;text-align:center;">
+              ${
+                waClientUrl
+                  ? `<div style="margin-top:22px;text-align:center;">
                       <a href="${waClientUrl}" style="display:inline-block;background-color:#E91E8C;color:#FFFFFF;font-weight:800;font-size:13px;padding:12px 24px;border-radius:999px;text-decoration:none;">
                         Contactar a ${escapeHtml(payload.full_name)} por WhatsApp
                       </a>
                     </div>`
-      : ""
-    }
+                  : ""
+              }
             </td>
           </tr>
 
@@ -445,7 +447,7 @@ async function sendEmailViaDenoNativeTls(options: {
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response("ok", { status: 200, headers: corsHeaders });
   }
 
   try {
@@ -510,8 +512,8 @@ Deno.serve(async (req: Request) => {
       recipients: RECIPIENTS,
       replyTo:
         payload.email &&
-          payload.email !== "No informado" &&
-          payload.email !== "notificaciones@vyplanesisapre.cl"
+        payload.email !== "No informado" &&
+        payload.email !== "notificaciones@vyplanesisapre.cl"
           ? payload.email
           : undefined,
       subject,
